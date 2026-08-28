@@ -475,9 +475,9 @@ footer {
   <p><strong>파일명이 ElevenLabs 보이스 이름입니다.</strong>
   <code>Closers_Android.txt</code>는 계정의 <code>Closers_Android</code> 보이스로 생성됩니다.
   프로젝트 폴더에 <code>.txt</code>를 넣으면 자동으로 인식됩니다.</p>
-<pre><code>[neutral] 보스의 위치를 확인했습니다. | 0001.wav
-[alert] 감염체가 남동쪽에서 접근하고 있습니다. | 0036.wav
-[combat] 쌍검의 탄약은 62발 남았습니다. | 0022.wav</code></pre>
+<pre><code>[neutral] 목적지에 도착했습니다. | 0001.wav
+[alert] 배터리 잔량이 20퍼센트입니다. | 0002.wav
+[combat] 남은 화살은 62발입니다. | 0003.wav</code></pre>
 
   <h3>웹앱 실행</h3>
 <pre><code>PY -m webapp
@@ -620,10 +620,10 @@ PY -m tts_batch declick Closers_Android.txt --check</code></pre>
   <div class="trap sev-high">
     <h3>단어 재작성이 명사를 망가뜨린다 <span class="chip high">치명적</span></h3>
     <p>조사 교정은 단어를 고쳐 씁니다. 형태소 분석이 없어서 <strong>실제 명사를 명사+조사로 오인</strong>할 수 있습니다.
-    계절 <code>가을</code>이 <code>가</code>+<code>을</code>로 읽혀 <code>가를 수확제</code>가 될 뻔했습니다.</p>
+    계절 <code>가을</code>이 <code>가</code>+<code>을</code>로 읽혀 <code>가를 축제</code>가 될 뻔했습니다.</p>
     <p><strong>생성 전에 <code>preview</code>의 단어 재작성 목록을 한 줄씩 읽으세요.</strong>
     진짜 문법 교정이 아닌 항목은 웹앱에서 클릭 한 번으로 보호 목록에 넣을 수 있습니다.</p>
-    <div class="evidence">가을 수확제 → 가를 수확제 &nbsp;·&nbsp; 20건 · 사전 검수로 차단</div>
+    <div class="evidence">가을 축제 → 가를 축제 &nbsp;·&nbsp; 20건 · 사전 검수로 차단</div>
   </div>
 
   <div class="trap sev-high">

@@ -75,12 +75,12 @@ Two passes, in this order:
    (date, attached) but `5일 남았습니다` → "오 일 남았습니다" (span, separated —
    run together it becomes 오일, the word for oil).
 2. **Particle agreement.** Fixes both the errors already in the source
-   (`정찰병가` → `정찰병이`) and the ones pass 1 creates: `3928를` becomes
+   (`학생가` → `학생이`) and the ones pass 1 creates: `3928를` becomes
    "삼천구백이십팔**을**", because the correct particle depends on how the number
    is spoken.
 
 `PROTECTED_TOKENS` in `normalize.py` guards nouns whose last syllable looks like
-a particle — without it, `가을 수확제` becomes `가를 수확제`.
+a particle — without it, `가을 축제` becomes `가를 축제`.
 
 **Before generating any new script, run `preview` and read the WORD REWRITES
 section.** Pass 2 rewrites words, and a real noun mis-parsed as noun+particle is

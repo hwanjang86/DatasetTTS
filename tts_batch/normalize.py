@@ -55,7 +55,7 @@ DATE_PREFIX_RE = re.compile(r"\d+\s*월\s*$")
 TRAILING_PUNCT = ".,?!\"'"
 
 # Nouns whose last syllable is shaped like a particle. Without this guard the
-# corrector reads "가을 수확제" as 가+을 and emits "가를 수확제".
+# corrector reads "가을 축제" as 가+을 and emits "가를 축제".
 #
 # This list cannot be complete for Korean in general -- it is the escape hatch
 # for what the preview report turns up. Run `preview_run.py` on every new script
