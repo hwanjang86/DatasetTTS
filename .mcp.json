@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "elevenlabs": {
+      "command": "C:\\Users\\hwanjang86\\.claude\\mcp-servers\\elevenlabs\\venv\\Scripts\\elevenlabs-mcp.exe",
+      "args": [],
+      "env": {
+        "ELEVENLABS_API_KEY": "${ELEVENLABS_API_KEY}",
+        "ELEVENLABS_MCP_BASE_PATH": "E:\\AI\\DatasetTTS\\output"
+      }
+    }
+  }
+}

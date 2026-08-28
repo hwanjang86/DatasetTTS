@@ -1,0 +1,867 @@
+<title>DatasetTTS 웹앱 매뉴얼</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hahmlet:wght@500;700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+KR:wght@400;500;600&display=swap">
+
+<style>
+:root {
+  --ground:      #fbfcfe;
+  --surface:     #ffffff;
+  --surface-2:   #f1f4f9;
+  --edge:        #dde3ec;
+  --edge-strong: #c3ccdb;
+  --ink:         #171c26;
+  --ink-soft:    #4e5768;
+  --ink-faint:   #78829a;
+  --accent:      #2b62c4;
+  --accent-soft: #e8eefb;
+  --good:        #1c7a54;
+  --good-soft:   #e2f2ea;
+  --warn:        #a1660f;
+  --warn-soft:   #f8eeda;
+  --bad:         #b23c33;
+  --bad-soft:    #fae9e7;
+
+  --display: "Hahmlet", "Nanum Myeongjo", Georgia, serif;
+  --body: "IBM Plex Sans KR", "Malgun Gothic", system-ui, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, Consolas, monospace;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --ground:      #0f131b;
+    --surface:     #161b25;
+    --surface-2:   #1c2230;
+    --edge:        #2a3242;
+    --edge-strong: #3b4557;
+    --ink:         #e3e8f1;
+    --ink-soft:    #a4aec2;
+    --ink-faint:   #7b8599;
+    --accent:      #78a9f5;
+    --accent-soft: #1a2740;
+    --good:        #55c294;
+    --good-soft:   #142b22;
+    --warn:        #e0a851;
+    --warn-soft:   #2e2415;
+    --bad:         #ea7a71;
+    --bad-soft:    #301a18;
+  }
+}
+
+:root[data-theme="dark"] {
+  --ground:      #0f131b;
+  --surface:     #161b25;
+  --surface-2:   #1c2230;
+  --edge:        #2a3242;
+  --edge-strong: #3b4557;
+  --ink:         #e3e8f1;
+  --ink-soft:    #a4aec2;
+  --ink-faint:   #7b8599;
+  --accent:      #78a9f5;
+  --accent-soft: #1a2740;
+  --good:        #55c294;
+  --good-soft:   #142b22;
+  --warn:        #e0a851;
+  --warn-soft:   #2e2415;
+  --bad:         #ea7a71;
+  --bad-soft:    #301a18;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--ground);
+  color: var(--ink);
+  font-family: var(--body);
+  font-size: 16px;
+  line-height: 1.72;
+  -webkit-font-smoothing: antialiased;
+}
+
+.wrap {
+  display: grid;
+  grid-template-columns: 216px minmax(0, 1fr);
+  gap: 52px;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 32px 110px;
+}
+
+/* ---- masthead ---- */
+
+.masthead {
+  grid-column: 1 / -1;
+  padding: 66px 0 36px;
+  border-bottom: 1px solid var(--edge);
+  margin-bottom: 44px;
+}
+
+.eyebrow {
+  font-family: var(--mono);
+  font-size: 12px;
+  letter-spacing: .13em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin: 0 0 14px;
+}
+
+h1 {
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: clamp(36px, 5.6vw, 54px);
+  line-height: 1.12;
+  letter-spacing: -.02em;
+  margin: 0 0 16px;
+  text-wrap: balance;
+}
+
+.standfirst { font-size: 18px; color: var(--ink-soft); max-width: 60ch; margin: 0; }
+
+.launch {
+  font-family: var(--mono);
+  font-size: 14px;
+  background: var(--surface);
+  border: 1px solid var(--edge);
+  border-left: 3px solid var(--accent);
+  border-radius: 3px;
+  padding: 12px 16px;
+  margin-top: 26px;
+  display: inline-block;
+}
+.launch .url { color: var(--accent); }
+
+/* ---- nav ---- */
+
+nav.toc {
+  position: sticky; top: 26px; align-self: start;
+  font-size: 13.5px; max-height: calc(100vh - 52px); overflow-y: auto;
+}
+nav.toc .label {
+  font-family: var(--mono); font-size: 10.5px; letter-spacing: .12em;
+  text-transform: uppercase; color: var(--ink-faint); margin-bottom: 12px;
+}
+nav.toc ol { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 3px; }
+nav.toc a {
+  color: var(--ink-soft); text-decoration: none; display: block;
+  padding: 4px 0 4px 13px; border-left: 2px solid var(--edge);
+}
+nav.toc a:hover { color: var(--accent); border-left-color: var(--accent); }
+nav.toc a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+/* ---- content ---- */
+
+main { min-width: 0; }
+section { margin-bottom: 64px; scroll-margin-top: 24px; }
+
+h2 {
+  font-family: var(--display); font-weight: 700; font-size: 26px;
+  letter-spacing: -.012em; margin: 0 0 6px; text-wrap: balance;
+}
+.deck { color: var(--ink-soft); margin: 0 0 24px; max-width: 64ch; }
+
+h3 {
+  font-family: var(--body); font-weight: 600; font-size: 16px;
+  margin: 30px 0 8px; letter-spacing: -.005em;
+}
+
+p { max-width: 64ch; }
+p + p { margin-top: 13px; }
+a { color: var(--accent); }
+
+code {
+  font-family: var(--mono); font-size: .875em;
+  background: var(--surface-2); border: 1px solid var(--edge);
+  border-radius: 3px; padding: 1px 5px;
+}
+
+pre {
+  font-family: var(--mono); font-size: 13px; line-height: 1.7;
+  background: var(--surface); border: 1px solid var(--edge);
+  border-left: 3px solid var(--accent); border-radius: 3px;
+  padding: 13px 16px; overflow-x: auto; margin: 14px 0;
+}
+pre code { background: none; border: none; padding: 0; font-size: inherit; }
+pre .c { color: var(--ink-faint); }
+
+/* ---- screen map ---- */
+
+.map {
+  border: 1px solid var(--edge-strong);
+  border-radius: 4px;
+  overflow: hidden;
+  margin: 22px 0;
+  font-size: 13px;
+}
+.map-row { border-bottom: 1px solid var(--edge); }
+.map-row:last-child { border-bottom: none; }
+.map-bar {
+  background: var(--surface-2);
+  padding: 9px 14px;
+  display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+}
+.map-bar .name { font-weight: 600; }
+.map-bar .desc { color: var(--ink-faint); font-size: 12.5px; }
+.map-tabs { display: flex; gap: 2px; padding: 0 10px; background: var(--surface); flex-wrap: wrap; }
+.map-tabs span {
+  padding: 8px 13px; font-family: var(--mono); font-size: 12px;
+  color: var(--ink-soft); border-bottom: 2px solid transparent;
+}
+.map-tabs span:first-child { color: var(--accent); border-bottom-color: var(--accent); }
+.map-body { padding: 22px 14px; background: var(--surface); color: var(--ink-faint); font-size: 12.5px; }
+
+/* ---- tables ---- */
+
+.tablewrap { overflow-x: auto; margin: 16px 0; }
+table { border-collapse: collapse; width: 100%; font-size: 14px; min-width: 540px; }
+th {
+  text-align: left; font-family: var(--mono); font-weight: 500; font-size: 11px;
+  letter-spacing: .09em; text-transform: uppercase; color: var(--ink-faint);
+  border-bottom: 1px solid var(--edge-strong); padding: 0 14px 8px 0;
+}
+td { border-bottom: 1px solid var(--edge); padding: 10px 14px 10px 0; vertical-align: top; }
+td:first-child { white-space: nowrap; }
+.num { font-family: var(--mono); font-variant-numeric: tabular-nums; }
+
+.ui {
+  font-family: var(--body); font-weight: 600; font-size: 13px;
+  background: var(--accent-soft); color: var(--accent);
+  border-radius: 3px; padding: 1.5px 7px; white-space: nowrap;
+}
+
+/* ---- recipes ---- */
+
+.recipe {
+  border: 1px solid var(--edge); background: var(--surface);
+  border-radius: 4px; padding: 18px 20px; margin-bottom: 14px;
+}
+.recipe h3 { margin: 0 0 12px; }
+.recipe ol { margin: 0; padding-left: 20px; }
+.recipe li { margin-bottom: 7px; }
+.recipe li:last-child { margin-bottom: 0; }
+.recipe p { margin: 12px 0 0; font-size: 14px; color: var(--ink-soft); }
+
+/* ---- callouts ---- */
+
+.note, .warnbox {
+  border-radius: 3px; padding: 15px 18px; margin: 20px 0; font-size: 15px;
+}
+.note { background: var(--accent-soft); }
+.warnbox { background: var(--warn-soft); color: var(--warn); }
+.warnbox strong { color: var(--warn); }
+.note p, .warnbox p { margin: 0; max-width: none; }
+.note p + p, .warnbox p + p { margin-top: 8px; }
+
+.dialog {
+  font-family: var(--mono); font-size: 13px; line-height: 1.65;
+  background: var(--surface-2); border: 1px dashed var(--edge-strong);
+  border-radius: 3px; padding: 12px 15px; margin: 12px 0; color: var(--ink-soft);
+  white-space: pre-wrap;
+}
+
+.pillrow { display: flex; flex-wrap: wrap; gap: 7px; margin: 12px 0; }
+.pill {
+  font-family: var(--mono); font-size: 11.5px; padding: 2px 9px;
+  border-radius: 2px; border: 1px solid var(--edge-strong); color: var(--ink-soft);
+}
+.pill.flag { background: var(--warn-soft); color: var(--warn); border-color: transparent; }
+
+footer {
+  grid-column: 1 / -1; border-top: 1px solid var(--edge);
+  padding-top: 24px; color: var(--ink-faint); font-size: 13.5px;
+}
+
+@media (max-width: 900px) {
+  .wrap { grid-template-columns: 1fr; gap: 0; padding: 0 22px 80px; }
+  nav.toc { position: static; max-height: none; margin-bottom: 42px; }
+  nav.toc ol { flex-direction: row; flex-wrap: wrap; gap: 8px; }
+  nav.toc a { border-left: none; border: 1px solid var(--edge); border-radius: 3px; padding: 4px 10px; }
+  .masthead { padding-top: 42px; }
+}
+</style>
+
+<div class="wrap">
+
+<header class="masthead">
+  <p class="eyebrow">Web control panel &amp; review workstation</p>
+  <h1>DatasetTTS 웹앱 매뉴얼</h1>
+  <p class="standfirst">
+    5개 탭, 모든 버튼과 입력란이 무엇을 하는지. 그리고 자주 하는 작업을 클릭 순서로.
+  </p>
+  <div class="launch">
+    PY -m webapp &nbsp;→&nbsp; <span class="url">http://127.0.0.1:8765</span>
+    &nbsp;·&nbsp; <a href="#run">실행 방법</a>
+  </div>
+</header>
+
+<nav class="toc">
+  <div class="label">목차</div>
+  <ol>
+    <li><a href="#run">실행하기</a></li>
+    <li><a href="#map">화면 구조</a></li>
+    <li><a href="#always">항상 보이는 것</a></li>
+    <li><a href="#scripts">Scripts 탭</a></li>
+    <li><a href="#preview">Preview 탭</a></li>
+    <li><a href="#generate">Generate 탭</a></li>
+    <li><a href="#review">Review 탭</a></li>
+    <li><a href="#tools">Tools 탭</a></li>
+    <li><a href="#recipes">자주 하는 작업</a></li>
+    <li><a href="#behavior">알아둘 동작</a></li>
+  </ol>
+</nav>
+
+<main>
+
+<section id="run">
+  <h2>실행하기</h2>
+  <p class="deck">ElevenLabs SDK가 설치된 venv의 파이썬으로 실행합니다. 시스템 파이썬으로는 동작하지 않습니다.</p>
+
+  <h3>1. 프로젝트 폴더로 이동</h3>
+<pre><code>cd E:\AI\DatasetTTS</code></pre>
+
+  <h3>2. 서버 시작</h3>
+  <p>PowerShell에서:</p>
+<pre><code>&amp; "$env:USERPROFILE\.claude\mcp-servers\elevenlabsenv\Scripts\python.exe" -m webapp</code></pre>
+  <p>이 긴 경로가 venv의 파이썬입니다. 매번 치기 번거로우면 변수에 담아 두세요.</p>
+<pre><code>$PY = "$env:USERPROFILE\.claude\mcp-servers\elevenlabsenv\Scripts\python.exe"
+&amp; $PY -m webapp</code></pre>
+
+  <h3>3. 이 출력이 나오면 성공</h3>
+<pre><code>API key   : found
+DatasetTTS: http://127.0.0.1:8765
+stop with : Ctrl+C</code></pre>
+  <p>브라우저에서 <strong>http://127.0.0.1:8765</strong> 를 엽니다.
+  <code>API key : MISSING</code>이 뜨면 환경변수가 설정되지 않은 것입니다 —
+  둘러보기와 오디오 도구는 되지만 생성·재생성은 실패합니다.</p>
+
+  <h3>4. 종료</h3>
+  <p>실행한 터미널에서 <strong>Ctrl+C</strong>. 터미널을 그냥 닫으면 프로세스가 남아
+  포트를 붙잡고 있을 수 있습니다.</p>
+
+  <h3>옵션</h3>
+  <div class="tablewrap">
+  <table>
+    <thead><tr><th>옵션</th><th>기본값</th><th>설명</th></tr></thead>
+    <tbody>
+      <tr><td><code>--port N</code></td><td class="num">8765</td><td>포트가 이미 쓰이고 있으면 바꾸세요</td></tr>
+      <tr><td><code>--host ADDR</code></td><td><code>127.0.0.1</code></td><td>루프백. <strong>바꾸지 마세요</strong> — 아래 참고</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <div class="warnbox">
+    <p><strong><code>--host 0.0.0.0</code>으로 열지 마세요.</strong>
+    이 서버에는 로그인이 없습니다. 접근할 수 있는 사람은 누구나 버튼 한 번으로
+    크레딧을 쓰고 오디오 파일을 지울 수 있습니다. 프로세스가 API 키를 들고 있고,
+    508MB의 오디오가 로컬 디스크에 있습니다. 혼자 쓰는 도구로 설계됐습니다.</p>
+  </div>
+
+  <h3>사전 조건</h3>
+  <div class="tablewrap">
+  <table>
+    <thead><tr><th>항목</th><th>확인 방법</th></tr></thead>
+    <tbody>
+      <tr>
+        <td>venv 파이썬</td>
+        <td><code>&amp; $PY -c "import elevenlabs, starlette, numpy"</code> 가 조용히 끝나면 정상</td>
+      </tr>
+      <tr>
+        <td>API 키</td>
+        <td>사용자 환경변수 <code>ELEVENLABS_API_KEY</code>.
+        설정 후에는 <strong>터미널을 새로 열어야</strong> 반영됩니다</td>
+      </tr>
+      <tr>
+        <td>크레딧 조회</td>
+        <td>키에 <code>user_read</code> 권한이 필요합니다. 없으면 상단 바에 "크레딧 조회 실패"가 뜨고
+        비용 게이트가 동작하지 않습니다</td>
+      </tr>
+      <tr>
+        <td>스크립트</td>
+        <td>프로젝트 폴더에 <code>.txt</code>가 하나 이상. 없으면 Scripts 탭이 비어 있습니다</td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+
+  <h3>시작이 안 될 때</h3>
+  <div class="tablewrap">
+  <table>
+    <thead><tr><th>증상</th><th>원인과 대처</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><code>No module named webapp</code></td>
+        <td>프로젝트 폴더가 아닌 곳에서 실행했습니다. <code>cd E:\AI\DatasetTTS</code> 후 다시</td>
+      </tr>
+      <tr>
+        <td><code>No module named elevenlabs</code></td>
+        <td>시스템 파이썬으로 실행했습니다. venv 경로를 쓰세요</td>
+      </tr>
+      <tr>
+        <td><code>address already in use</code></td>
+        <td>이미 떠 있거나 이전 프로세스가 남았습니다.
+        <code>netstat -ano | findstr :8765</code> 로 PID를 찾아 종료하거나 <code>--port 8766</code></td>
+      </tr>
+      <tr>
+        <td>아무것도 안 찍힘</td>
+        <td>출력을 파일로 리다이렉트한 경우입니다. 그래도 서버는 떠 있으니 브라우저로 접속해 보세요</td>
+      </tr>
+      <tr>
+        <td>페이지는 뜨는데 목록이 비어 있음</td>
+        <td>프로젝트 폴더에 <code>.txt</code>가 없습니다. 브라우저 콘솔(F12)에 오류가 있는지도 확인하세요</td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+</section>
+
+<section id="map">
+  <h2>화면 구조</h2>
+  <p class="deck">위에서부터 상단 바, 작업 바, 탭, 내용. 상단 바와 작업 바는 스크롤해도 따라옵니다.</p>
+
+  <div class="map">
+    <div class="map-row map-bar">
+      <span class="name">DatasetTTS</span>
+      <span class="desc">보이스 선택 드롭다운</span>
+      <span style="flex:1"></span>
+      <span class="desc">creator · 잔여 77,779 / 236,338자</span>
+    </div>
+    <div class="map-row map-bar" style="border-left:3px solid var(--accent)">
+      <span class="name">작업 바</span>
+      <span class="desc">작업이 돌 때만 나타납니다 · 진행률 · 중단 버튼 · 로그</span>
+    </div>
+    <div class="map-row map-tabs">
+      <span>Scripts</span><span>Preview</span><span>Generate</span><span>Review</span><span>Tools</span>
+    </div>
+    <div class="map-row map-body">선택한 탭의 내용</div>
+  </div>
+</section>
+
+<section id="always">
+  <h2>항상 보이는 것</h2>
+
+  <h3>상단 바</h3>
+  <div class="tablewrap">
+  <table>
+    <thead><tr><th>요소</th><th>동작</th></tr></thead>
+    <tbody>
+      <tr>
+        <td>보이스 드롭다운</td>
+        <td>프로젝트 폴더의 <code>.txt</code> 목록. <strong>바꾸면 Preview와 Review에 불러왔던 내용이 지워집니다</strong> — 다른 보이스의 결과가 섞이지 않도록</td>
+      </tr>
+      <tr>
+        <td>크레딧 표시</td>
+        <td>페이지를 열 때 한 번 조회합니다. 생성 후 갱신하려면 새로고침하세요. API 키에 <code>user_read</code> 권한이 없으면 "크레딧 조회 실패"</td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+
+  <h3>작업 바</h3>
+  <p>작업이 시작되면 나타나고, 끝나도 결과를 보여주며 남아 있습니다.</p>
+  <div class="tablewrap">
+  <table>
+    <thead><tr><th>요소</th><th>내용</th></tr></thead>
+    <tbody>
+      <tr><td>라벨</td><td><code>generate Closers_Android</code> 처럼 작업 종류와 보이스</td></tr>
+      <tr>
+        <td>상태 줄</td>
+        <td><code>1240/4161 · 건너뜀 0 · 실패 0 · 플래그 12 · 2.7/s eta 18m03s</code><br>
+        작업 전에는 "준비 중…", 끝나면 결과 요약</td>
+      </tr>
+      <tr><td>진행 막대</td><td>완료 비율</td></tr>
+      <tr><td><span class="ui">중단</span></td><td>진행 중일 때만 보입니다. 아래 설명 참고</td></tr>
+      <tr><td>로그</td><td>최근 6줄. 보이스 해석, 시작, 오류 등</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <div class="note">
+    <p><strong>중단은 즉시 멈추지 않습니다.</strong> 이미 API에 나간 요청은 끝까지 받습니다.
+    누르면 "중단을 요청했습니다. 진행 중인 클립까지 마치고 멈춥니다." 토스트가 뜨고,
+    동시 요청 5개 기준 몇 초 안에 정지합니다. 받은 오디오는 버리지 않고 저장하므로
+    그만큼의 크레딧은 낭비되지 않습니다.</p>
+  </div>
+
+  <h3>토스트</h3>
+  <p>화면 아래 가운데에 잠깐 나타납니다. 초록은 성공, 빨강은 실패, 회색은 알림. 약 4초 후 사라집니다.</p>
+</section>
+
+<section id="scripts">
+  <h2>Scripts 탭</h2>
+  <p class="deck">페이지를 열면 자동으로 채워집니다. 버튼이 없는 유일한 탭입니다.</p>
+
+  <p>보이스마다 카드가 하나씩 나옵니다.</p>
+  <div class="tablewrap">
+  <table>
+    <thead><tr><th>표시</th><th>의미</th></tr></thead>
+    <tbody>
+      <tr><td>큰 제목</td><td>보이스 이름 (= 파일명에서 <code>.txt</code>를 뺀 것)</td></tr>
+      <tr><td>작은 글씨</td><td>스크립트 파일명</td></tr>
+      <tr><td class="num">4,211 / 4,211 클립 · 100%</td><td>생성된 wav 개수 / 스크립트 줄 수</td></tr>
+      <tr><td>주황색 문구</td><td>스크립트 파싱 오류. 이게 보이면 다른 탭은 동작하지 않습니다</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <p>새 보이스를 추가하려면 <strong>ElevenLabs 보이스 이름과 똑같은 이름의</strong>
+  <code>.txt</code>를 프로젝트 폴더에 넣고 페이지를 새로고침하세요.</p>
+</section>
+
+<section id="preview">
+  <h2>Preview 탭</h2>
+  <p class="deck">숫자를 한글로 펼치고 조사를 교정한 결과를 확인합니다. API를 호출하지 않으므로 크레딧이 들지 않습니다.</p>
+
+  <h3><span class="ui">정규화 실행</span> 버튼</h3>
+  <p>전체 스크립트를 처리하고 통계 6개를 보여줍니다. 4,211줄 기준 몇 초 걸립니다.</p>
+  <div class="tablewrap">
+  <table>
+    <thead><tr><th>통계</th><th>의미</th></tr></thead>
+    <tbody>
+      <tr><td>줄</td><td>스크립트의 전체 줄 수</td></tr>
+      <tr><td>변경된 줄</td><td>정규화로 텍스트가 바뀐 줄</td></tr>
+      <tr><td>숫자 인접 조사</td><td><code>삼천구백이십팔를</code> → <code>…을</code> 같은 기계적 교정. 검토 불필요</td></tr>
+      <tr><td>단어 재작성</td><td><strong>검토 대상.</strong> 0이면 초록, 1건이라도 있으면 주황</td></tr>
+      <tr><td>발화 문자</td><td>실제로 읽히는 글자 수</td></tr>
+      <tr><td>과금 문자</td><td>감정 태그를 포함해 청구될 글자 수</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <h3>단어 재작성 표</h3>
+  <p>재작성이 하나라도 있으면 나타납니다. <strong>생성 전에 한 줄씩 읽으세요.</strong>
+  조사 교정은 형태소 분석 없이 동작하므로 실제 명사를 명사+조사로 오인할 수 있습니다.</p>
+
+  <div class="tablewrap">
+  <table>
+    <thead><tr><th>열</th><th>내용</th></tr></thead>
+    <tbody>
+      <tr><td>변경 전 / 후</td><td><code>정찰병가</code> → <code>정찰병이</code></td></tr>
+      <tr><td>건수</td><td>스크립트 전체에서 몇 번 일어나는지</td></tr>
+      <tr>
+        <td><span class="ui">보호 목록에 추가</span></td>
+        <td>이 단어를 건드리지 않게 만듭니다. 누르면 <span class="ui">재시작 필요</span>로 바뀝니다.
+        이미 보호된 단어는 <span class="ui">보호됨</span>으로 비활성</td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+
+  <div class="warnbox">
+    <p><strong>보호 목록에 추가한 뒤에는 서버를 재시작해야 반영됩니다.</strong>
+    소스 파일을 고치는 방식이라 실행 중인 프로세스는 옛 목록을 들고 있습니다.
+    터미널에서 Ctrl+C 후 <code>PY -m webapp</code>을 다시 실행하세요.</p>
+  </div>
+
+  <p>판단 기준은 간단합니다 — <strong>변경 전 칸이 그 자체로 말이 되는 단어면 오탐입니다.</strong>
+  <code>가을</code>은 계절이지 <code>가</code>+<code>을</code>이 아닙니다.
+  반대로 <code>정찰병가</code>는 어떤 단어도 아니므로 진짜 교정입니다.</p>
+
+  <h3>줄 단위 확인</h3>
+  <div class="tablewrap">
+  <table>
+    <thead><tr><th>컨트롤</th><th>동작</th></tr></thead>
+    <tbody>
+      <tr><td>검색창</td><td>원문·변환문·파일명에서 찾습니다. <strong>Enter로도 실행</strong></td></tr>
+      <tr><td>변경된 줄만</td><td>정규화가 아무것도 바꾸지 않은 줄을 숨깁니다</td></tr>
+      <tr><td><span class="ui">불러오기</span></td><td>100줄씩 불러옵니다</td></tr>
+      <tr><td><span class="ui">더 보기</span></td><td>다음 100줄. 남은 게 없으면 사라집니다</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <p>바뀐 줄은 <strong>빨강(원래)</strong>과 <strong>초록(바뀐 것)</strong>으로 단어 단위 비교가 표시됩니다.
+  <code>neutral</code>이 아닌 감정은 파란 태그로 붙습니다.</p>
+</section>
+
+<section id="generate">
+  <h2>Generate 탭</h2>
+  <p class="deck">유일하게 크레딧을 쓰는 탭입니다. 상자 세 개로 나뉩니다.</p>
+
+  <h3>비용 확인</h3>
+  <div class="tablewrap">
+  <table>
+    <thead><tr><th>컨트롤</th><th>기본값</th><th>동작</th></tr></thead>
+    <tbody>
+      <tr><td>줄 수 제한</td><td>빈칸 = 전체</td><td>앞에서 N줄만. 파일럿용</td></tr>
+      <tr><td><span class="ui">예상 비용 계산</span></td><td>—</td><td>필요 · 잔여 · 실행 후 크레딧을 보여줍니다</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p>"실행 후"가 음수면 빨간색으로 표시되고 "크레딧이 부족합니다" 토스트가 뜹니다.
+  <strong>줄 수 제한을 넣으면 그 줄들만의 비용을 계산합니다</strong> — 전체 파일 비용이 아닙니다.</p>
+
+  <h3>생성</h3>
+  <div class="tablewrap">
+  <table>
+    <thead><tr><th>컨트롤</th><th>기본값</th><th>동작</th></tr></thead>
+    <tbody>
+      <tr><td>무음 패딩</td><td class="num">50 ms</td><td>앞뒤 무음을 이 길이로 통일합니다. <code>0</code>이면 원본 그대로</td></tr>
+      <tr><td>동시 요청</td><td class="num">5</td><td>Creator 티어 한도가 5입니다. 올리면 429가 늘어납니다</td></tr>
+      <tr><td>기존 파일도 다시 생성</td><td>꺼짐</td><td><strong>켜면 이미 만든 클립도 다시 만듭니다 — 그만큼 다시 청구됩니다</strong></td></tr>
+      <tr><td><span class="ui">생성 시작</span></td><td>—</td><td>확인 대화상자를 띄운 뒤 시작</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <p>확인 대화상자는 이렇게 나옵니다.</p>
+  <div class="dialog">94,050자를 사용합니다. 잔여 171,962 → 77,912자.
+
+크레딧이 실제로 차감됩니다. 진행할까요?</div>
+  <p>크레딧이 부족하면 확인이 한 번 더 나옵니다.</p>
+
+  <h3>재생성</h3>
+  <div class="tablewrap">
+  <table>
+    <thead><tr><th>컨트롤</th><th>기본값</th><th>동작</th></tr></thead>
+    <tbody>
+      <tr><td>QC 플래그도 포함</td><td>켜짐</td><td>끄면 실패한 클립만 다시 만듭니다</td></tr>
+      <tr><td>테이크</td><td class="num">1</td><td>seed 오프셋. <strong>같은 값은 같은 오디오를 냅니다</strong></td></tr>
+      <tr><td><span class="ui">실패·플래그 재생성</span></td><td>—</td><td>확인 후 시작</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <div class="note">
+    <p><strong>재생성했는데 똑같은 잡음이 나온다면 테이크 번호를 올리세요.</strong>
+    클립마다 seed가 고정되어 있어 재현성이 보장되는 대신, 같은 테이크로는 몇 번을 돌려도
+    바이트 단위로 같은 오디오가 나옵니다. 1로 안 되면 2, 3으로 올립니다.</p>
+  </div>
+</section>
+
+<section id="review">
+  <h2>Review 탭</h2>
+  <p class="deck">클립을 듣고, 파형을 보고, 잘라내기 전후를 비교하고, 되돌립니다. 크레딧이 들지 않습니다.</p>
+
+  <h3>상단 컨트롤</h3>
+  <div class="tablewrap">
+  <table>
+    <thead><tr><th>컨트롤</th><th>동작</th></tr></thead>
+    <tbody>
+      <tr>
+        <td>필터</td>
+        <td><strong>전체</strong> / <strong>QC 플래그만</strong> / <strong>잡음 제거된 것만</strong>.
+        바꾸면 즉시 다시 불러옵니다</td>
+      </tr>
+      <tr><td>검색창</td><td>파일명·대사에서 찾습니다. Enter로도 실행</td></tr>
+      <tr><td><span class="ui">불러오기</span></td><td>60건씩</td></tr>
+      <tr><td>통계 줄</td><td><code>4,211건 표시 · trailing_artifact 56 · 되돌릴 수 있는 클립 56</code></td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <h3>클립 카드</h3>
+  <p>한 줄에 정보가 모여 있습니다. QC 플래그가 있으면 카드 왼쪽 테두리가 주황색이 됩니다.</p>
+  <div class="pillrow">
+    <span class="pill">0041</span>
+    <span class="pill">combat</span>
+    <span class="pill">정밀 조준의 위상력 소모량은 팔십칠입니다.</span>
+    <span class="pill flag">trailing_artifact</span>
+    <span class="pill">3.12s lead 0.04 tail 0.00</span>
+  </div>
+
+  <div class="tablewrap">
+  <table>
+    <thead><tr><th>요소</th><th>의미</th></tr></thead>
+    <tbody>
+      <tr><td>ID</td><td>파일명에서 <code>.wav</code>를 뺀 것</td></tr>
+      <tr><td>감정 태그</td><td><code>neutral</code>이 아닐 때만 표시</td></tr>
+      <tr><td>플래그</td><td>주황색 알약. <code>trailing_artifact</code>, <code>clipped</code>,
+      <code>silent</code>, <code>too_short</code>, <code>duration_mismatch</code></td></tr>
+      <tr><td>측정치</td><td>길이 · 앞 무음 · 뒤 무음(초)</td></tr>
+      <tr><td><span class="ui">재생</span></td><td>누르면 재생, 다시 누르면 정지하고 처음으로</td></tr>
+      <tr><td><span class="ui">파형</span></td><td>파형을 펼칩니다. 다시 누르면 접힙니다</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <h3>파형과 되돌리기</h3>
+  <p>파형 위 라벨에 <code>현재 · 2.68s · tail 0.06s</code> 처럼 실측치가 붙습니다.
+  플래그가 있으면 파형이 주황색으로 그려집니다.</p>
+
+  <p><strong><code>originals/</code>에 백업이 있는 클립</strong>은 파형이 두 개로 나옵니다 —
+  왼쪽이 <code>현재 (잘라냄)</code>, 오른쪽이 <code>원본</code>. 버튼도 두 개 늘어납니다.</p>
+
+  <div class="tablewrap">
+  <table>
+    <thead><tr><th>버튼</th><th>동작</th></tr></thead>
+    <tbody>
+      <tr><td><span class="ui">원본 재생</span></td><td>잘라내기 전 오디오를 재생합니다</td></tr>
+      <tr>
+        <td><span class="ui">원본으로 되돌리기</span></td>
+        <td>확인 후 원본을 복원하고 백업을 지웁니다. 매니페스트 측정치도 갱신됩니다.
+        <strong>되돌린 뒤에는 다시 되돌릴 수 없습니다</strong></td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+
+  <div class="warnbox">
+    <p><strong>declick 실행 후에는 반드시 여기서 들어보세요.</strong>
+    필터를 "잡음 제거된 것만"으로 놓고, 특히 절단량이 큰 클립부터 확인합니다.
+    마지막 음절이 짧고 급하게 끝나는 클립은 발화가 잘못 잘릴 수 있습니다.</p>
+  </div>
+</section>
+
+<section id="tools">
+  <h2>Tools 탭</h2>
+  <p class="deck">오디오 파일을 직접 손봅니다. 둘 다 API를 호출하지 않으므로 크레딧이 들지 않습니다.</p>
+
+  <h3>retrim — 앞뒤 무음 정리</h3>
+  <p>저장된 클립의 앞뒤 무음을 일정하게 맞춥니다. 생성 시 트림이 적용되지 않은 클립을 찾아 수리합니다.
+  멱등성이 있어 반복 실행해도 안전하고, 규격에 맞는 클립은 건드리지 않습니다.</p>
+  <div class="tablewrap">
+  <table>
+    <thead><tr><th>컨트롤</th><th>동작</th></tr></thead>
+    <tbody>
+      <tr><td>패딩</td><td>남길 무음 길이. 기본 50ms</td></tr>
+      <tr><td><span class="ui">검사만</span></td><td>규격을 벗어난 클립을 보고만 합니다. 파일을 건드리지 않습니다</td></tr>
+      <tr><td><span class="ui">수리 실행</span></td><td>실제로 잘라냅니다</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p><strong>배치가 끝날 때마다 한 번씩 돌리는 걸 권합니다.</strong>
+  4,211건 생성 시 39건(0.9%)이 트림을 건너뛴 적이 있고, 원인은 재현되지 않았습니다.</p>
+
+  <h3>declick — 끝부분 잡음 제거</h3>
+  <p>발화 뒤에 붙은 짧은 틱을 잘라냅니다. 고정 길이가 아니라
+  <strong>클립마다 감지된 발화 끝 지점에서</strong> 자릅니다.</p>
+  <div class="tablewrap">
+  <table>
+    <thead><tr><th>컨트롤</th><th>동작</th></tr></thead>
+    <tbody>
+      <tr><td>패딩</td><td>발화 뒤에 남길 무음. 기본 50ms</td></tr>
+      <tr><td><span class="ui">검사만</span></td><td>어느 클립이 얼마나 잘릴지 미리 봅니다</td></tr>
+      <tr><td><span class="ui">잘라내기 실행</span></td><td>확인 후 실행. 원본은 자동 백업됩니다</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <div class="dialog">클립 오디오를 잘라냅니다. 원본은 originals/ 에 백업되고
+Review 탭에서 되돌릴 수 있습니다. 진행할까요?</div>
+
+  <h3>결과 표</h3>
+  <p>작업이 끝나면 아래에 표가 나타납니다. declick은
+  <code>wav · before · after · removedMs</code>, retrim은
+  <code>wav · before · after · tail</code>을 보여줍니다. 최대 200행까지 표시됩니다.</p>
+</section>
+
+<section id="recipes">
+  <h2>자주 하는 작업</h2>
+  <p class="deck">클릭 순서 그대로.</p>
+
+  <div class="recipe">
+    <h3>새 보이스를 처음 돌리기</h3>
+    <ol>
+      <li>ElevenLabs 보이스 이름과 똑같은 <code>.txt</code>를 프로젝트 폴더에 넣고 새로고침</li>
+      <li><strong>Scripts</strong> — 카드가 보이고 파싱 오류가 없는지 확인</li>
+      <li><strong>Preview</strong> — <span class="ui">정규화 실행</span> → <strong>단어 재작성 표를 한 줄씩 읽기</strong>.
+      오탐이 있으면 보호 목록에 추가하고 서버 재시작 후 다시 실행</li>
+      <li><strong>Preview</strong> — 줄 단위 확인에서 "변경된 줄만" 켜고 몇 페이지 훑기</li>
+      <li><strong>Generate</strong> — 줄 수 제한에 <code>50</code> → <span class="ui">예상 비용 계산</span> → <span class="ui">생성 시작</span></li>
+      <li><strong>Review</strong> — 50건 들어보기. 톤·숫자 발음·감정 확인</li>
+      <li>문제없으면 <strong>Generate</strong>에서 줄 수 제한을 비우고 <span class="ui">생성 시작</span></li>
+      <li><strong>Tools</strong> — <span class="ui">검사만</span>으로 retrim → declick 순서로 확인 후 실행</li>
+      <li><strong>Review</strong> — 필터를 "잡음 제거된 것만"으로 놓고 결과 검수</li>
+    </ol>
+  </div>
+
+  <div class="recipe">
+    <h3>QC 플래그가 뜬 클립 처리하기</h3>
+    <ol>
+      <li><strong>Review</strong> — 필터 "QC 플래그만" → <span class="ui">불러오기</span></li>
+      <li>몇 개를 <span class="ui">재생</span>해서 실제로 문제가 있는지 확인</li>
+      <li>끝의 짧은 틱이면 → <strong>Tools</strong>의 declick (무료)</li>
+      <li>발음이나 톤 자체가 이상하면 → <strong>Generate</strong>의 재생성 (유료)</li>
+      <li>재생성했는데 똑같으면 테이크를 <code>2</code>로 올려 다시</li>
+    </ol>
+    <p>같은 문제라도 원인에 따라 대응이 다릅니다. 틱은 잘라내면 되고, 톤은 다시 만들어야 합니다.</p>
+  </div>
+
+  <div class="recipe">
+    <h3>잘못 잘린 클립 되돌리기</h3>
+    <ol>
+      <li><strong>Review</strong> — 필터 "잡음 제거된 것만"</li>
+      <li>해당 클립의 <span class="ui">파형</span>을 눌러 현재와 원본을 나란히 확인</li>
+      <li><span class="ui">원본 재생</span>으로 잘리기 전 소리 확인</li>
+      <li><span class="ui">원본으로 되돌리기</span></li>
+    </ol>
+    <p>여러 개가 잘못 잘렸다면 잘라내기 임계값이 이 보이스에 안 맞는 것입니다.
+    <code>audio.py</code>의 <code>ARTIFACT_MAX_MS</code>를 낮추고 다시 시도하세요.</p>
+  </div>
+
+  <div class="recipe">
+    <h3>중단했다가 이어서 하기</h3>
+    <ol>
+      <li>작업 바에서 <span class="ui">중단</span></li>
+      <li>나중에 <strong>Generate</strong>에서 <span class="ui">생성 시작</span>을 다시 누르기</li>
+    </ol>
+    <p>이미 만든 클립은 자동으로 건너뜁니다. 중복 과금이 없습니다.
+    "기존 파일도 다시 생성"은 켜지 마세요 — 켜면 처음부터 다시 청구됩니다.</p>
+  </div>
+</section>
+
+<section id="behavior">
+  <h2>알아둘 동작</h2>
+
+  <div class="tablewrap">
+  <table>
+    <thead><tr><th>상황</th><th>어떻게 되는가</th></tr></thead>
+    <tbody>
+      <tr>
+        <td>작업 중에 다른 작업을 시작</td>
+        <td>거부됩니다. "a job is already running: …" 토스트. 한 번에 하나만 돌아갑니다</td>
+      </tr>
+      <tr>
+        <td>브라우저 탭을 닫음</td>
+        <td><strong>작업은 계속됩니다.</strong> 서버에서 돌기 때문입니다. 다시 열면 현재 상태가 그대로 보입니다</td>
+      </tr>
+      <tr>
+        <td>작업 도중에 페이지를 열었을 때</td>
+        <td>진행률이 바로 채워집니다. 처음부터 보고 있지 않아도 됩니다</td>
+      </tr>
+      <tr>
+        <td>보호 목록에 단어 추가</td>
+        <td>소스 파일이 수정됩니다. <strong>서버 재시작 후에 반영됩니다</strong></td>
+      </tr>
+      <tr>
+        <td>보이스 드롭다운 변경</td>
+        <td>Preview·Review에 불러왔던 내용이 지워집니다. 다시 <span class="ui">불러오기</span>를 누르세요</td>
+      </tr>
+      <tr>
+        <td>서버를 끄고 싶을 때</td>
+        <td>실행한 터미널에서 Ctrl+C</td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+
+  <div class="warnbox">
+    <p><strong>루프백 전용입니다.</strong> 인증이 없고, 프로세스가 API 키를 들고 있으며,
+    버튼 한 번으로 크레딧을 쓸 수 있습니다. <code>--host</code>로 외부 주소에 바인딩하지 마세요.</p>
+  </div>
+
+  <h3>CLI와의 관계</h3>
+  <p>웹앱은 CLI와 <strong>같은 코드를 호출합니다.</strong> 정규화·QC 로직을 따로 구현하지 않았기 때문에
+  두 경로의 결과가 항상 같습니다. 웹앱에서 생성하다 중단하고 CLI로 이어가도 되고, 그 반대도 됩니다.</p>
+  <div class="tablewrap">
+  <table>
+    <thead><tr><th>웹앱</th><th>같은 일을 하는 CLI</th></tr></thead>
+    <tbody>
+      <tr><td>Preview의 <span class="ui">정규화 실행</span></td><td><code>PY -m tts_batch preview &lt;script&gt;</code></td></tr>
+      <tr><td>Generate의 <span class="ui">예상 비용 계산</span></td><td><code>PY -m tts_batch estimate &lt;script&gt;</code></td></tr>
+      <tr><td>Generate의 <span class="ui">생성 시작</span></td><td><code>PY -m tts_batch generate &lt;script&gt;</code></td></tr>
+      <tr><td>Generate의 <span class="ui">재생성</span></td><td><code>PY -m tts_batch retry &lt;script&gt; --include-flagged</code></td></tr>
+      <tr><td>Tools의 retrim</td><td><code>PY -m tts_batch retrim &lt;script&gt; [--check]</code></td></tr>
+      <tr><td>Tools의 declick</td><td><code>PY -m tts_batch declick &lt;script&gt; [--check]</code></td></tr>
+    </tbody>
+  </table>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  DatasetTTS 웹앱 · Starlette + uvicorn · 127.0.0.1:8765 · 로컬 전용
+</footer>
+
+</div>

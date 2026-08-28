@@ -1,0 +1,802 @@
+<title>DatasetTTS 사용법</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hahmlet:wght@500;700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+KR:wght@400;500;600&display=swap">
+
+<style>
+:root {
+  --ground:      #fbfcfe;
+  --surface:     #ffffff;
+  --surface-2:   #f1f4f9;
+  --edge:        #dde3ec;
+  --edge-strong: #c3ccdb;
+  --ink:         #171c26;
+  --ink-soft:    #4e5768;
+  --ink-faint:   #78829a;
+  --accent:      #2b62c4;
+  --accent-soft: #e8eefb;
+  --good:        #1c7a54;
+  --good-soft:   #e2f2ea;
+  --warn:        #a1660f;
+  --warn-soft:   #f8eeda;
+  --bad:         #b23c33;
+  --bad-soft:    #fae9e7;
+
+  --display: "Hahmlet", "Nanum Myeongjo", Georgia, serif;
+  --body: "IBM Plex Sans KR", "Malgun Gothic", system-ui, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, Consolas, monospace;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --ground:      #0f131b;
+    --surface:     #161b25;
+    --surface-2:   #1c2230;
+    --edge:        #2a3242;
+    --edge-strong: #3b4557;
+    --ink:         #e3e8f1;
+    --ink-soft:    #a4aec2;
+    --ink-faint:   #7b8599;
+    --accent:      #78a9f5;
+    --accent-soft: #1a2740;
+    --good:        #55c294;
+    --good-soft:   #142b22;
+    --warn:        #e0a851;
+    --warn-soft:   #2e2415;
+    --bad:         #ea7a71;
+    --bad-soft:    #301a18;
+  }
+}
+
+:root[data-theme="dark"] {
+  --ground:      #0f131b;
+  --surface:     #161b25;
+  --surface-2:   #1c2230;
+  --edge:        #2a3242;
+  --edge-strong: #3b4557;
+  --ink:         #e3e8f1;
+  --ink-soft:    #a4aec2;
+  --ink-faint:   #7b8599;
+  --accent:      #78a9f5;
+  --accent-soft: #1a2740;
+  --good:        #55c294;
+  --good-soft:   #142b22;
+  --warn:        #e0a851;
+  --warn-soft:   #2e2415;
+  --bad:         #ea7a71;
+  --bad-soft:    #301a18;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--ground);
+  color: var(--ink);
+  font-family: var(--body);
+  font-size: 16px;
+  line-height: 1.72;
+  -webkit-font-smoothing: antialiased;
+}
+
+.wrap {
+  display: grid;
+  grid-template-columns: 232px minmax(0, 1fr);
+  gap: 56px;
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 0 32px 120px;
+}
+
+/* ---- masthead ---- */
+
+.masthead {
+  grid-column: 1 / -1;
+  padding: 72px 0 40px;
+  border-bottom: 1px solid var(--edge);
+  margin-bottom: 48px;
+}
+
+.eyebrow {
+  font-family: var(--mono);
+  font-size: 12px;
+  letter-spacing: .13em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin: 0 0 14px;
+}
+
+h1 {
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: clamp(38px, 6vw, 58px);
+  line-height: 1.12;
+  letter-spacing: -.02em;
+  margin: 0 0 18px;
+  text-wrap: balance;
+}
+
+.standfirst {
+  font-size: 18px;
+  color: var(--ink-soft);
+  max-width: 62ch;
+  margin: 0;
+}
+
+.facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 28px;
+}
+
+.fact {
+  border: 1px solid var(--edge);
+  background: var(--surface);
+  border-radius: 3px;
+  padding: 9px 14px;
+}
+
+.fact .k {
+  font-family: var(--mono);
+  font-size: 10.5px;
+  letter-spacing: .09em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  display: block;
+}
+
+.fact .v {
+  font-family: var(--mono);
+  font-size: 15px;
+  font-variant-numeric: tabular-nums;
+  color: var(--ink);
+}
+
+/* ---- nav rail ---- */
+
+nav.toc {
+  position: sticky;
+  top: 28px;
+  align-self: start;
+  font-size: 13.5px;
+  max-height: calc(100vh - 56px);
+  overflow-y: auto;
+}
+
+nav.toc .label {
+  font-family: var(--mono);
+  font-size: 10.5px;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  margin-bottom: 12px;
+}
+
+nav.toc ol {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+nav.toc a {
+  color: var(--ink-soft);
+  text-decoration: none;
+  display: block;
+  padding: 4px 0 4px 13px;
+  border-left: 2px solid var(--edge);
+}
+
+nav.toc a:hover { color: var(--accent); border-left-color: var(--accent); }
+nav.toc a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+/* ---- content ---- */
+
+main { min-width: 0; }
+
+section { margin-bottom: 68px; scroll-margin-top: 24px; }
+
+h2 {
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: 27px;
+  letter-spacing: -.012em;
+  margin: 0 0 6px;
+  text-wrap: balance;
+}
+
+h2 .n {
+  font-family: var(--mono);
+  font-weight: 400;
+  font-size: 14px;
+  color: var(--accent);
+  margin-right: 12px;
+  vertical-align: 3px;
+}
+
+.deck {
+  color: var(--ink-soft);
+  margin: 0 0 26px;
+  max-width: 66ch;
+}
+
+h3 {
+  font-family: var(--body);
+  font-weight: 600;
+  font-size: 16px;
+  margin: 34px 0 8px;
+  letter-spacing: -.005em;
+}
+
+p { max-width: 66ch; }
+p + p { margin-top: 14px; }
+
+a { color: var(--accent); }
+
+code {
+  font-family: var(--mono);
+  font-size: .875em;
+  background: var(--surface-2);
+  border: 1px solid var(--edge);
+  border-radius: 3px;
+  padding: 1px 5px;
+}
+
+pre {
+  font-family: var(--mono);
+  font-size: 13px;
+  line-height: 1.7;
+  background: var(--surface);
+  border: 1px solid var(--edge);
+  border-left: 3px solid var(--accent);
+  border-radius: 3px;
+  padding: 14px 16px;
+  overflow-x: auto;
+  margin: 14px 0;
+}
+
+pre code { background: none; border: none; padding: 0; font-size: inherit; }
+pre .c { color: var(--ink-faint); }
+
+/* ---- tables ---- */
+
+.tablewrap { overflow-x: auto; margin: 18px 0; }
+
+table {
+  border-collapse: collapse;
+  width: 100%;
+  font-size: 14px;
+  min-width: 520px;
+}
+
+th {
+  text-align: left;
+  font-family: var(--mono);
+  font-weight: 500;
+  font-size: 11px;
+  letter-spacing: .09em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  border-bottom: 1px solid var(--edge-strong);
+  padding: 0 14px 8px 0;
+}
+
+td {
+  border-bottom: 1px solid var(--edge);
+  padding: 10px 14px 10px 0;
+  vertical-align: top;
+}
+
+td:first-child { white-space: nowrap; }
+td code { white-space: nowrap; }
+.num { font-family: var(--mono); font-variant-numeric: tabular-nums; }
+
+/* ---- steps ---- */
+
+.steps { display: flex; flex-direction: column; gap: 2px; }
+
+.step {
+  display: grid;
+  grid-template-columns: 40px minmax(0, 1fr);
+  gap: 18px;
+  padding: 20px 0;
+  border-bottom: 1px solid var(--edge);
+}
+
+.step:last-child { border-bottom: none; }
+
+.step .idx {
+  font-family: var(--mono);
+  font-size: 13px;
+  color: var(--accent);
+  padding-top: 2px;
+  font-variant-numeric: tabular-nums;
+}
+
+.step h3 { margin: 0 0 4px; }
+.step p { margin: 0; }
+.step pre { margin: 12px 0 0; }
+
+.cost {
+  display: inline-block;
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: .05em;
+  padding: 1px 8px;
+  border-radius: 2px;
+  margin-left: 8px;
+  vertical-align: 2px;
+}
+
+.cost.free { background: var(--good-soft); color: var(--good); }
+.cost.paid { background: var(--warn-soft); color: var(--warn); }
+
+/* ---- traps ---- */
+
+.trap {
+  border: 1px solid var(--edge);
+  border-left: 3px solid var(--edge-strong);
+  background: var(--surface);
+  border-radius: 3px;
+  padding: 18px 20px;
+  margin-bottom: 14px;
+}
+
+.trap.sev-high { border-left-color: var(--bad); }
+.trap.sev-mid  { border-left-color: var(--warn); }
+
+.trap h3 { margin: 0 0 6px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.trap p { margin: 0; font-size: 15px; }
+.trap p + p { margin-top: 10px; }
+
+.chip {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: .09em;
+  text-transform: uppercase;
+  padding: 2px 8px;
+  border-radius: 2px;
+  font-weight: 500;
+}
+
+.chip.high { background: var(--bad-soft); color: var(--bad); }
+.chip.mid  { background: var(--warn-soft); color: var(--warn); }
+
+.evidence {
+  font-family: var(--mono);
+  font-size: 12.5px;
+  color: var(--ink-soft);
+  background: var(--surface-2);
+  border-radius: 3px;
+  padding: 10px 13px;
+  margin-top: 12px;
+  overflow-x: auto;
+}
+
+/* ---- callout ---- */
+
+.note {
+  background: var(--accent-soft);
+  border-radius: 3px;
+  padding: 15px 18px;
+  margin: 20px 0;
+  font-size: 15px;
+}
+
+.note strong { font-weight: 600; }
+.note p { margin: 0; max-width: none; }
+.note p + p { margin-top: 8px; }
+
+/* ---- tree ---- */
+
+.tree {
+  font-family: var(--mono);
+  font-size: 13px;
+  line-height: 1.85;
+  background: var(--surface);
+  border: 1px solid var(--edge);
+  border-radius: 3px;
+  padding: 16px 18px;
+  overflow-x: auto;
+}
+
+.tree .path { color: var(--ink); }
+.tree .desc { color: var(--ink-faint); }
+
+footer {
+  grid-column: 1 / -1;
+  border-top: 1px solid var(--edge);
+  padding-top: 24px;
+  color: var(--ink-faint);
+  font-size: 13.5px;
+}
+
+@media (max-width: 900px) {
+  .wrap { grid-template-columns: 1fr; gap: 0; padding: 0 22px 80px; }
+  nav.toc { position: static; max-height: none; margin-bottom: 44px; }
+  nav.toc ol { flex-direction: row; flex-wrap: wrap; gap: 8px; }
+  nav.toc a { border-left: none; border: 1px solid var(--edge); border-radius: 3px; padding: 4px 10px; }
+  .masthead { padding-top: 44px; }
+}
+</style>
+
+<div class="wrap">
+
+<header class="masthead">
+  <p class="eyebrow">Korean TTS dataset toolkit</p>
+  <h1>DatasetTTS 사용법</h1>
+  <p class="standfirst">
+    스크립트 한 장으로 ElevenLabs 음성 데이터셋을 대량 생성하고, 검수하고, 수리하는 도구.
+    CLI와 로컬 웹앱이 같은 코드를 씁니다.
+  </p>
+  <div class="facts">
+    <div class="fact"><span class="k">현재 데이터셋</span><span class="v">4,211 클립</span></div>
+    <div class="fact"><span class="k">오디오</span><span class="v">181.4분 · 508MB</span></div>
+    <div class="fact"><span class="k">포맷</span><span class="v">24kHz 16bit mono</span></div>
+    <div class="fact"><span class="k">모델</span><span class="v">eleven_v3</span></div>
+    <div class="fact"><span class="k">테스트</span><span class="v">136 passed</span></div>
+  </div>
+</header>
+
+<nav class="toc">
+  <div class="label">목차</div>
+  <ol>
+    <li><a href="#start">시작하기</a></li>
+    <li><a href="#flow">작업 흐름</a></li>
+    <li><a href="#webapp">웹앱</a></li>
+    <li><a href="#cli">명령 레퍼런스</a></li>
+    <li><a href="#traps">함정</a></li>
+    <li><a href="#output">산출물</a></li>
+    <li><a href="#tuning">설정 조정</a></li>
+    <li><a href="#trouble">문제 해결</a></li>
+  </ol>
+</nav>
+
+<main>
+
+<section id="start">
+  <h2><span class="n">01</span>시작하기</h2>
+  <p class="deck">모든 명령은 ElevenLabs SDK가 설치된 venv의 파이썬으로 실행합니다.</p>
+
+  <h3>파이썬 경로</h3>
+<pre><code>%USERPROFILE%\.claude\mcp-servers\elevenlabs\venv\Scripts\python.exe</code></pre>
+  <p>PowerShell에서는 <code>&amp; "$env:USERPROFILE\.claude\mcp-servers\elevenlabs\venv\Scripts\python.exe"</code>
+  형태로 호출합니다. 아래 예시는 이 경로를 <code>PY</code>로 줄여 씁니다.</p>
+
+  <h3>API 키</h3>
+  <p>사용자 환경변수 <code>ELEVENLABS_API_KEY</code>를 읽습니다. 키에
+  <code>user_read</code> 권한이 있어야 크레딧 잔량을 조회할 수 있습니다.
+  없어도 생성 자체는 되지만 비용 게이트가 동작하지 않습니다.</p>
+
+  <h3>스크립트 형식</h3>
+  <p><strong>파일명이 ElevenLabs 보이스 이름입니다.</strong>
+  <code>Closers_Android.txt</code>는 계정의 <code>Closers_Android</code> 보이스로 생성됩니다.
+  프로젝트 폴더에 <code>.txt</code>를 넣으면 자동으로 인식됩니다.</p>
+<pre><code>[neutral] 보스의 위치를 확인했습니다. | 0001.wav
+[alert] 감염체가 남동쪽에서 접근하고 있습니다. | 0036.wav
+[combat] 쌍검의 탄약은 62발 남았습니다. | 0022.wav</code></pre>
+
+  <h3>웹앱 실행</h3>
+<pre><code>PY -m webapp
+<span class="c"># http://127.0.0.1:8765</span></code></pre>
+  <div class="note">
+    <p><strong>루프백 전용입니다.</strong> 인증이 없고, 프로세스가 API 키를 들고 있으며,
+    크레딧을 쓸 수 있습니다. <code>--host</code>로 외부에 노출하지 마세요.</p>
+  </div>
+</section>
+
+<section id="flow">
+  <h2><span class="n">02</span>작업 흐름</h2>
+  <p class="deck">순서가 중요합니다. 3번까지는 크레딧이 들지 않고, 4번에서 처음으로 돈이 나갑니다.</p>
+
+  <div class="steps">
+
+    <div class="step">
+      <div class="idx">01</div>
+      <div>
+        <h3>스크립트 배치<span class="cost free">무료</span></h3>
+        <p>보이스 이름과 똑같은 이름의 <code>.txt</code>를 프로젝트 폴더에 둡니다.
+        웹앱 <strong>Scripts</strong> 탭이나 <code>preview</code>가 파싱 오류를 바로 알려줍니다.</p>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="idx">02</div>
+      <div>
+        <h3>정규화 검수<span class="cost free">무료</span></h3>
+        <p>숫자를 한글로 펼치고 조사를 교정한 결과를 확인합니다.
+        <strong>여기서 반드시 단어 재작성 목록을 읽으세요.</strong>
+        실제 명사가 섞여 있으면 데이터셋 전체가 오염됩니다.</p>
+<pre><code>PY -m tts_batch preview Closers_Android.txt</code></pre>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="idx">03</div>
+      <div>
+        <h3>비용 확인<span class="cost free">무료</span></h3>
+        <p>과금 문자 수와 잔여 크레딧을 비교합니다. 부족하면 여기서 멈춥니다.</p>
+<pre><code>PY -m tts_batch estimate Closers_Android.txt</code></pre>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="idx">04</div>
+      <div>
+        <h3>파일럿 50건<span class="cost paid">유료</span></h3>
+        <p>전체를 돌리기 전에 소량으로 톤·숫자 발음·감정 표현을 귀로 확인합니다.
+        실제로 이 단계에서 두 개의 버그가 잡혔습니다.</p>
+<pre><code>PY -m tts_batch generate Closers_Android.txt --limit 50</code></pre>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="idx">05</div>
+      <div>
+        <h3>전체 생성<span class="cost paid">유료</span></h3>
+        <p>이미 만든 클립은 건너뜁니다. 중단해도 이어서 진행되고 중복 과금이 없습니다.
+        동시 요청 5개 기준 4,211건에 약 26분.</p>
+<pre><code>PY -m tts_batch generate Closers_Android.txt</code></pre>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="idx">06</div>
+      <div>
+        <h3>수리와 검수<span class="cost free">무료</span></h3>
+        <p><code>retrim</code>으로 앞뒤 무음을 맞추고, <code>declick</code>으로 끝부분 틱을 잘라냅니다.
+        둘 다 <code>--check</code>로 먼저 보고, 실행 후에는 <strong>웹앱 Review 탭에서 들어봅니다.</strong></p>
+<pre><code>PY -m tts_batch retrim Closers_Android.txt --check
+PY -m tts_batch declick Closers_Android.txt --check</code></pre>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<section id="webapp">
+  <h2><span class="n">03</span>웹앱</h2>
+  <p class="deck">CLI와 같은 6개 작업을 브라우저에서 합니다. 서버는 <code>tts_batch</code>를 감싸기만 하므로 두 경로의 결과가 항상 같습니다.</p>
+
+  <div class="tablewrap">
+  <table>
+    <thead><tr><th>탭</th><th>하는 일</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Scripts</strong></td><td>스크립트 목록, 보이스 매칭, 생성 진행률</td></tr>
+      <tr><td><strong>Preview</strong></td><td>정규화 요약, 단어 재작성 감사(클릭 한 번으로 보호 목록 추가), 줄 단위 diff 검색</td></tr>
+      <tr><td><strong>Generate</strong></td><td>실행 전 비용 확인, 실시간 진행률, 중단 버튼, 실패·플래그 재생성</td></tr>
+      <tr><td><strong>Review</strong></td><td>클립 재생·파형, 플래그 필터, 잘라내기 전후 나란히 비교, 개별 되돌리기</td></tr>
+      <tr><td><strong>Tools</strong></td><td>retrim·declick의 검사 모드와 실행 모드</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <p>작업은 한 번에 하나만 돌아갑니다. 실행 중에 다른 작업을 요청하면 거부됩니다.
+  진행률은 서버가 밀어주므로 페이지를 나중에 열어도 현재 상태가 그대로 보입니다.</p>
+</section>
+
+<section id="cli">
+  <h2><span class="n">04</span>명령 레퍼런스</h2>
+
+  <div class="tablewrap">
+  <table>
+    <thead><tr><th>명령</th><th>API 호출</th><th>설명</th></tr></thead>
+    <tbody>
+      <tr><td><code>preview</code></td><td>없음</td><td>전체 정규화 + 검수 파일 생성</td></tr>
+      <tr><td><code>estimate</code></td><td>1회(무료)</td><td>비용 대 잔여 크레딧 비교</td></tr>
+      <tr><td><code>generate</code></td><td>줄당 1회</td><td>합성. 실행 전 확인 프롬프트</td></tr>
+      <tr><td><code>retry</code></td><td>클립당 1회</td><td>실패분 재생성. <code>--include-flagged</code>로 QC 플래그 포함</td></tr>
+      <tr><td><code>retrim</code></td><td>없음</td><td>앞뒤 무음 불변식 검사·수리</td></tr>
+      <tr><td><code>declick</code></td><td>없음</td><td>끝부분 틱 제거</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <h3>주요 옵션</h3>
+  <div class="tablewrap">
+  <table>
+    <thead><tr><th>옵션</th><th>기본값</th><th>설명</th></tr></thead>
+    <tbody>
+      <tr><td><code>--limit N</code></td><td class="num">전체</td><td>앞에서 N줄만. 파일럿용</td></tr>
+      <tr><td><code>--trim MS</code></td><td class="num">50</td><td>앞뒤 무음 패딩. <code>0</code>이면 원본 유지</td></tr>
+      <tr><td><code>--concurrency N</code></td><td class="num">5</td><td>동시 요청. Creator 티어 한도가 5</td></tr>
+      <tr><td><code>--force</code></td><td>off</td><td>기존 클립도 다시 생성</td></tr>
+      <tr><td><code>-y</code></td><td>off</td><td>비용 확인 프롬프트 건너뛰기</td></tr>
+      <tr><td><code>--take N</code></td><td class="num">1</td><td>retry의 seed 오프셋. 같은 값은 같은 오디오</td></tr>
+      <tr><td><code>--pad MS</code></td><td class="num">50</td><td>retrim·declick의 남길 무음</td></tr>
+      <tr><td><code>--check</code></td><td>off</td><td>보고만 하고 파일을 건드리지 않음</td></tr>
+    </tbody>
+  </table>
+  </div>
+</section>
+
+<section id="traps">
+  <h2><span class="n">05</span>함정</h2>
+  <p class="deck">전부 실제로 겪은 것들입니다. 새 보이스를 시작할 때 이 목록부터 확인하세요.</p>
+
+  <div class="trap sev-high">
+    <h3>단어 재작성이 명사를 망가뜨린다 <span class="chip high">치명적</span></h3>
+    <p>조사 교정은 단어를 고쳐 씁니다. 형태소 분석이 없어서 <strong>실제 명사를 명사+조사로 오인</strong>할 수 있습니다.
+    계절 <code>가을</code>이 <code>가</code>+<code>을</code>로 읽혀 <code>가를 수확제</code>가 될 뻔했습니다.</p>
+    <p><strong>생성 전에 <code>preview</code>의 단어 재작성 목록을 한 줄씩 읽으세요.</strong>
+    진짜 문법 교정이 아닌 항목은 웹앱에서 클릭 한 번으로 보호 목록에 넣을 수 있습니다.</p>
+    <div class="evidence">가을 수확제 → 가를 수확제 &nbsp;·&nbsp; 20건 · 사전 검수로 차단</div>
+  </div>
+
+  <div class="trap sev-high">
+    <h3>declick이 마지막 단어를 자를 수 있다 <span class="chip high">치명적</span></h3>
+    <p>틱과 단어를 가르는 기준은 <code>ARTIFACT_MAX_MS</code>입니다. 500ms였을 때
+    480ms짜리 <strong>정상적인 마지막 단어</strong>를 틱으로 판정해 잘라냈습니다.
+    현재는 200ms입니다.</p>
+    <p>실측상 이 코퍼스의 틱은 55건이 정확히 20ms, 실제 발화는 480ms로 명확히 갈렸습니다.
+    다른 보이스에서는 경계가 다를 수 있으니 <strong>declick 후 Review 탭에서 반드시 들어보세요.</strong>
+    원본은 <code>originals/</code>에 자동 백업되어 되돌릴 수 있습니다.</p>
+    <div class="evidence">2718.wav · 480ms 마지막 단어 절단 · 백업에서 복원</div>
+  </div>
+
+  <div class="trap sev-mid">
+    <h3>고정 길이로 잘라내면 안 된다 <span class="chip mid">주의</span></h3>
+    <p>편차는 틱이 아니라 <strong>틱 앞의 공백</strong>에 있습니다. 틱은 20ms로 일정한데
+    공백이 100~420ms로 벌어져 잘라낼 총량이 5배 차이납니다.
+    가장 긴 610ms로 일괄 절단하면 56건 중 55건이 실제 발화를 잃습니다.</p>
+    <p><code>declick</code>은 클립마다 감지된 발화 끝 지점에서 자릅니다.</p>
+  </div>
+
+  <div class="trap sev-mid">
+    <h3>seed가 고정이라 재생성해도 같은 오디오가 나온다 <span class="chip mid">주의</span></h3>
+    <p>클립 ID로 seed를 만들어 재현성을 보장합니다. 그래서 <code>retry</code>는
+    seed 오프셋을 올려야 다른 테이크가 나옵니다. 기본 <code>--take 1</code>,
+    또 실패하면 <code>--take 2</code>로 올립니다. 사용된 seed는 매니페스트에 남습니다.</p>
+  </div>
+
+  <div class="trap sev-mid">
+    <h3>트림이 가끔 적용되지 않는다 <span class="chip mid">주의</span></h3>
+    <p>4,211건 중 39건(0.9%)이 생성 시 트림을 건너뛰었습니다.
+    같은 텍스트로 다시 호출하면 정상 동작해서 <strong>원인을 재현하지 못했습니다.</strong></p>
+    <p>그래서 생성 시 트림을 신뢰하지 않고 사후 검증합니다.
+    <strong>배치가 끝날 때마다 <code>retrim</code>을 돌리세요.</strong> 멱등성이 있고 비용이 없습니다.</p>
+  </div>
+
+  <div class="trap sev-mid">
+    <h3>44.1kHz는 Creator 티어에서 막혀 있다 <span class="chip mid">주의</span></h3>
+    <p><code>pcm_44100</code>은 Pro 티어 전용입니다. 다만 업그레이드할 이유가 없습니다 —
+    24kHz의 나이퀴스트 한계(11,025Hz) 위쪽 에너지가 전체의 <strong>0.32%</strong>뿐이고
+    16kHz 이상은 0입니다. 모델이 그 대역에 아무것도 만들지 않습니다.</p>
+    <p><code>mp3_44100_192</code>는 샘플레이트만 높고 손실 압축이라 현재의 24kHz 무손실보다 나쁩니다.</p>
+  </div>
+</section>
+
+<section id="output">
+  <h2><span class="n">06</span>산출물</h2>
+
+  <div class="tree">
+<span class="path">output/&lt;보이스&gt;/</span>
+<span class="path">├─ wavs/NNNN.wav</span>       <span class="desc">24kHz 모노 16bit PCM</span>
+<span class="path">├─ originals/NNNN.wav</span>  <span class="desc">declick 이전 원본 (되돌리기용)</span>
+<span class="path">├─ metadata.csv</span>        <span class="desc">id|transcript|emotion — LJSpeech 형식</span>
+<span class="path">├─ manifest.jsonl</span>      <span class="desc">seed·파라미터·QC 측정치 전체 기록</span>
+<span class="path">├─ qc_flags.csv</span>        <span class="desc">들어봐야 할 클립</span>
+<span class="path">├─ failures.csv</span>        <span class="desc">끝내 실패한 클립</span>
+<span class="path">├─ preview.txt</span>         <span class="desc">원문 → 발화 → 전송, 전 줄</span>
+<span class="path">├─ changes.txt</span>         <span class="desc">변경된 줄만</span>
+<span class="path">└─ josa_changes.txt</span>    <span class="desc">조사 교정 감사</span>
+  </div>
+
+  <h3>transcript가 오디오와 일치합니다</h3>
+  <p><code>metadata.csv</code>의 텍스트는 <strong>정규화 후의 문장</strong>입니다.
+  <code>43636</code>이 아니라 <code>사만 삼천육백삼십육</code>이 적힙니다.
+  서버 정규화를 끄고 직접 변환하기 때문에 학습에 필요한 transcript↔오디오 일치가 보장됩니다.</p>
+
+  <div class="note">
+    <p><strong>QC 리포트는 덮어쓰기 방식입니다.</strong>
+    깨끗해진 클립은 목록에서 빠지고, 비면 파일 자체가 삭제됩니다.
+    그래서 <code>retry</code>가 이미 고친 클립을 다시 만들지 않습니다.</p>
+  </div>
+</section>
+
+<section id="tuning">
+  <h2><span class="n">07</span>설정 조정</h2>
+
+  <div class="tablewrap">
+  <table>
+    <thead><tr><th>위치</th><th>설정</th><th>현재값과 이유</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><code>cli.py</code></td>
+        <td><code>DEFAULTS</code></td>
+        <td>모델 <code>eleven_v3</code>, <code>pcm_24000</code>,
+        <code>apply_text_normalization="off"</code>(직접 정규화하므로),
+        동시 5(Creator 한도), <code>[neutral]</code> 태그 생략</td>
+      </tr>
+      <tr>
+        <td><code>audio.py</code></td>
+        <td><code>ARTIFACT_MAX_MS</code></td>
+        <td class="num">200 — <strong>새 보이스에서 가장 먼저 재조정이 필요한 값</strong></td>
+      </tr>
+      <tr>
+        <td><code>audio.py</code></td>
+        <td><code>ARTIFACT_GAP_MS</code></td>
+        <td class="num">100 — 틱을 발화에서 분리하는 최소 공백</td>
+      </tr>
+      <tr>
+        <td><code>normalize.py</code></td>
+        <td><code>PROTECTED_TOKENS</code></td>
+        <td>조사처럼 끝나는 명사. <code>preview</code>에서 발견하면 여기 추가</td>
+      </tr>
+      <tr>
+        <td><code>normalize.py</code></td>
+        <td><code>COUNTERS</code></td>
+        <td>단위별 수사 체계. <code>개·명·곳·발·배·시간</code>은 고유어,
+        <code>퍼센트·미터·분·초·시·월·일</code>은 한자어</td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+
+  <h3><code>[neutral]</code>을 생략하는 이유</h3>
+  <p>측정 결과입니다. 태그를 넣은 것과 뺀 것의 차이가 ±0.08초로 v3의 일반적인 생성 편차 안이었고,
+  태그 자체가 과금 문자에 포함되어 이 스크립트에서만 <strong>35,150자</strong>였습니다.</p>
+
+  <h3>숫자 읽기 규칙</h3>
+  <p>고유어 수사는 99까지만 쓰고 그 이상은 한자어로 넘어갑니다 —
+  <code>295발</code>은 <code>이백구십오 발</code>입니다.
+  <code>일</code>은 문맥으로 갈립니다: <code>7월 10일</code>은 <code>칠월 십일</code>로 붙이고,
+  <code>5일 남았습니다</code>는 <code>오 일</code>로 띄웁니다. 붙이면 기름(오일)으로 들립니다.</p>
+</section>
+
+<section id="trouble">
+  <h2><span class="n">08</span>문제 해결</h2>
+
+  <div class="tablewrap">
+  <table>
+    <thead><tr><th>증상</th><th>확인할 것</th></tr></thead>
+    <tbody>
+      <tr>
+        <td>보이스를 못 찾음</td>
+        <td>스크립트 파일명과 ElevenLabs 보이스 이름이 <strong>정확히</strong> 일치해야 합니다. 대소문자 포함</td>
+      </tr>
+      <tr>
+        <td>크레딧 조회 실패</td>
+        <td>API 키에 <code>user_read</code> 권한이 있는지. 없으면 생성은 되지만 비용 게이트가 꺼집니다</td>
+      </tr>
+      <tr>
+        <td>숫자를 한 자씩 읽음</td>
+        <td>정규화를 거치지 않은 텍스트가 전송된 경우입니다. <code>preview.txt</code>의 <code>send:</code> 줄을 확인하세요</td>
+      </tr>
+      <tr>
+        <td>재생성해도 잡음이 그대로</td>
+        <td><code>--take</code> 값을 올리세요. 같은 값은 같은 seed라 같은 오디오가 나옵니다</td>
+      </tr>
+      <tr>
+        <td>보호 목록 추가가 반영 안 됨</td>
+        <td>웹앱에서 추가했다면 서버를 재시작해야 합니다</td>
+      </tr>
+      <tr>
+        <td>웹앱에서 작업이 거부됨</td>
+        <td>이미 다른 작업이 돌고 있습니다. 상단 작업 바에서 중단하거나 끝날 때까지 기다리세요</td>
+      </tr>
+      <tr>
+        <td>생성이 중간에 끊김</td>
+        <td>같은 명령을 다시 실행하면 됩니다. 이미 만든 클립은 건너뛰므로 중복 과금이 없습니다</td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+
+  <h3>테스트</h3>
+<pre><code>PY -m pytest tests/ -q
+<span class="c"># 136 passed</span></code></pre>
+  <p>정규화 규칙을 바꿨다면 반드시 돌리세요. 한국어 수사·조사 규칙이
+  <code>tests/test_korean.py</code>에 케이스로 고정되어 있습니다.</p>
+</section>
+
+</main>
+
+<footer>
+  DatasetTTS · ElevenLabs eleven_v3 · Python + Starlette · 로컬 전용
+</footer>
+
+</div>

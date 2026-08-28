@@ -1,0 +1,21 @@
+# Generated audio and its reports. The Closers_Android run alone is 518 MB of
+# WAV, and every file in here is reproducible from the script plus the tools.
+output/
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.venv/
+venv/
+
+# Editors / OS
+.vscode/
+.idea/
+Thumbs.db
+desktop.ini
+.DS_Store
+
+# The voice scripts themselves. Filename = ElevenLabs voice name.
+*.txt

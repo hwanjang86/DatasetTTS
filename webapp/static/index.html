@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DatasetTTS</title>
+<link rel="stylesheet" href="/static/app.css">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand">DatasetTTS</div>
+  <select id="scriptSel" class="script-select"></select>
+  <div class="spacer"></div>
+  <div id="credit" class="credit"></div>
+</header>
+
+<div id="jobbar" class="jobbar hidden">
+  <div class="jobbar-head">
+    <span id="jobLabel" class="job-label"></span>
+    <span id="jobStat" class="job-stat"></span>
+    <button id="jobStop" class="btn btn-danger btn-sm">중단</button>
+  </div>
+  <div class="bar"><div id="jobFill" class="bar-fill"></div></div>
+  <div id="jobLog" class="job-log"></div>
+</div>
+
+<nav class="tabs">
+  <button class="tab active" data-tab="scripts">Scripts</button>
+  <button class="tab" data-tab="preview">Preview</button>
+  <button class="tab" data-tab="generate">Generate</button>
+  <button class="tab" data-tab="review">Review</button>
+  <button class="tab" data-tab="tools">Tools</button>
+</nav>
+
+<main>
+
+<!-- Scripts -->
+<section id="tab-scripts" class="panel active">
+  <div id="scriptCards" class="cards"></div>
+  <p class="hint">스크립트 파일명이 ElevenLabs 보이스 이름입니다. 프로젝트 폴더에
+  <code>.txt</code>를 넣으면 여기 나타납니다.</p>
+</section>
+
+<!-- Preview -->
+<section id="tab-preview" class="panel">
+  <div class="row">
+    <button id="btnPreview" class="btn btn-primary">정규화 실행 (API 호출 없음)</button>
+    <span class="hint">숫자를 한글로 펼치고 조사를 교정합니다. 크레딧이 들지 않습니다.</span>
+  </div>
+  <div id="previewSummary" class="stats"></div>
+
+  <div id="rewriteBox" class="box hidden">
+    <h3>단어 재작성 <span class="warn-pill">검토 필요</span></h3>
+    <p class="hint">조사 교정은 단어를 고쳐 씁니다. 실제 명사가 여기 있으면
+    데이터가 손상됩니다 (<code>가을 → 가를</code> 같은 경우). 보호 목록에 넣으세요.</p>
+    <table class="tbl" id="rewriteTbl"></table>
+  </div>
+
+  <div class="box">
+    <h3>줄 단위 확인</h3>
+    <div class="row">
+      <input id="lineSearch" class="input" placeholder="검색 (원문·변환문·파일명)">
+      <label class="check"><input type="checkbox" id="onlyChanged"> 변경된 줄만</label>
+      <button id="btnLines" class="btn">불러오기</button>
+      <span id="lineCount" class="hint"></span>
+    </div>
+    <div id="lineRows" class="linerows"></div>
+    <div class="row"><button id="btnMoreLines" class="btn hidden">더 보기</button></div>
+  </div>
+</section>
+
+<!-- Generate -->
+<section id="tab-generate" class="panel">
+  <div class="box">
+    <h3>비용 확인</h3>
+    <div class="row">
+      <label>줄 수 제한 <input id="genLimit" class="input input-sm" type="number"
+        placeholder="전체" min="1"></label>
+      <button id="btnEstimate" class="btn">예상 비용 계산</button>
+    </div>
+    <div id="estimateBox" class="stats"></div>
+  </div>
+
+  <div class="box">
+    <h3>생성</h3>
+    <div class="row">
+      <label>무음 패딩 <input id="genTrim" class="input input-sm" type="number" value="50"> ms</label>
+      <label>동시 요청 <input id="genConc" class="input input-sm" type="number" value="5" min="1" max="15"></label>
+      <label class="check"><input type="checkbox" id="genForce"> 기존 파일도 다시 생성</label>
+    </div>
+    <p class="hint">이미 생성된 클립은 건너뜁니다. 중단해도 이어서 진행할 수 있습니다.</p>
+    <button id="btnGenerate" class="btn btn-primary">생성 시작</button>
+  </div>
+
+  <div class="box">
+    <h3>재생성</h3>
+    <div class="row">
+      <label class="check"><input type="checkbox" id="retryFlagged" checked> QC 플래그도 포함</label>
+      <label>테이크 <input id="retryTake" class="input input-sm" type="number" value="1" min="1"></label>
+      <button id="btnRetry" class="btn">실패·플래그 재생성</button>
+    </div>
+    <p class="hint">테이크 번호가 seed를 바꿉니다. 같은 번호는 같은 오디오를 냅니다.</p>
+  </div>
+</section>
+
+<!-- Review -->
+<section id="tab-review" class="panel">
+  <div class="row review-controls">
+    <select id="clipFilter" class="input">
+      <option value="all">전체</option>
+      <option value="flagged">QC 플래그만</option>
+      <option value="declicked">잡음 제거된 것만</option>
+    </select>
+    <input id="clipSearch" class="input" placeholder="검색 (파일명·대사)">
+    <button id="btnClips" class="btn">불러오기</button>
+    <span id="clipStats" class="hint"></span>
+  </div>
+  <div id="clipList" class="cliplist"></div>
+  <div class="row"><button id="btnMoreClips" class="btn hidden">더 보기</button></div>
+</section>
+
+<!-- Tools -->
+<section id="tab-tools" class="panel">
+  <div class="box">
+    <h3>retrim — 앞뒤 무음 정리</h3>
+    <p class="hint">저장된 클립의 앞뒤 무음을 일정하게 맞춥니다. 생성 시 적용이
+    빠진 클립을 찾아 수리합니다. 멱등성이 있어 반복 실행해도 안전합니다.</p>
+    <div class="row">
+      <label>패딩 <input id="retrimPad" class="input input-sm" type="number" value="50"> ms</label>
+      <button class="btn" data-tool="retrim" data-check="1">검사만</button>
+      <button class="btn btn-primary" data-tool="retrim" data-check="0">수리 실행</button>
+    </div>
+  </div>
+
+  <div class="box">
+    <h3>declick — 끝부분 잡음 제거</h3>
+    <p class="hint">발화 뒤에 붙은 짧은 틱을 각 클립의 발화 끝 지점에서 잘라냅니다.
+    고정 길이가 아니라 클립마다 다르게 자릅니다. 원본은
+    <code>output/&lt;보이스&gt;/originals/</code>에 백업되며 Review 탭에서 되돌릴 수 있습니다.</p>
+    <div class="row">
+      <label>패딩 <input id="declickPad" class="input input-sm" type="number" value="50"> ms</label>
+      <button class="btn" data-tool="declick" data-check="1">검사만</button>
+      <button class="btn btn-primary" data-tool="declick" data-check="0">잘라내기 실행</button>
+    </div>
+    <p class="warn">실행 후 Review 탭에서 반드시 들어보세요. 마지막 음절이 짧고
+    급하게 끝나는 클립은 발화가 잘못 잘릴 수 있습니다.</p>
+  </div>
+
+  <div id="toolResult" class="box hidden">
+    <h3>결과</h3>
+    <div id="toolBody"></div>
+  </div>
+</section>
+
+</main>
+
+<div id="toast" class="toast hidden"></div>
+<script src="/static/app.js"></script>
+</body>
+</html>
