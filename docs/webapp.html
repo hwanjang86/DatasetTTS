@@ -505,6 +505,18 @@ stop with : Ctrl+C</code></pre>
 
   <p>새 보이스를 추가하려면 <strong>ElevenLabs 보이스 이름과 똑같은 이름의</strong>
   <code>.txt</code>를 프로젝트 폴더에 넣고 페이지를 새로고침하세요.</p>
+
+  <h3>스크립트 한 줄의 형태</h3>
+<pre><code>(행복)[happy] 오늘은 정말 즐거운 날이에요! | 0001.wav
+ |     |
+ |     +-- 오디오 태그: 모델에게 이 감정으로 연기하라고 지시
+ +-------- 스타일: 이 클립이 저장될 폴더</code></pre>
+  <p>둘 다 선택사항이라 <code>[neutral] 텍스트 | 0001.wav</code>처럼 써도 됩니다.
+  <strong>괄호 안의 스타일은 API로 전송되지 않아 과금 문자에 포함되지 않습니다.</strong>
+  대괄호 안의 오디오 태그만 모델에 전달되고, <code>[neutral]</code>은 생략됩니다.</p>
+  <p>스타일을 쓰면 클립이 <code>wavs/행복/0001.wav</code>로 저장되고,
+  Review 탭에서 폴더별로 걸러 볼 수 있습니다. 스타일 이름이 곧 폴더 이름이라
+  경로 구분자나 Windows 예약어는 파싱 단계에서 거부됩니다.</p>
 </section>
 
 <section id="preview">
@@ -642,6 +654,11 @@ stop with : Ctrl+C</code></pre>
         <td><strong>전체</strong> / <strong>QC 플래그만</strong> / <strong>잡음 제거된 것만</strong>.
         바꾸면 즉시 다시 불러옵니다</td>
       </tr>
+      <tr>
+        <td>스타일</td>
+        <td>스크립트에 <code>(행복)</code> 같은 스타일 태그를 썼다면 폴더별로 좁혀 봅니다.
+        <code>행복 (2)</code>처럼 건수가 함께 나오고, 스타일이 없는 데이터셋에서는 비활성입니다</td>
+      </tr>
       <tr><td>검색창</td><td>파일명·대사에서 찾습니다. Enter로도 실행</td></tr>
       <tr><td><span class="ui">불러오기</span></td><td>60건씩</td></tr>
       <tr><td>통계 줄</td><td><code>4,211건 표시 · trailing_artifact 56 · 되돌릴 수 있는 클립 56</code></td></tr>
@@ -653,6 +670,7 @@ stop with : Ctrl+C</code></pre>
   <p>한 줄에 정보가 모여 있습니다. QC 플래그가 있으면 카드 왼쪽 테두리가 주황색이 됩니다.</p>
   <div class="pillrow">
     <span class="pill">0041</span>
+    <span class="pill">행복</span>
     <span class="pill">combat</span>
     <span class="pill">남은 거리는 팔십칠 미터입니다.</span>
     <span class="pill flag">trailing_artifact</span>
@@ -664,6 +682,7 @@ stop with : Ctrl+C</code></pre>
     <thead><tr><th>요소</th><th>의미</th></tr></thead>
     <tbody>
       <tr><td>ID</td><td>파일명에서 <code>.wav</code>를 뺀 것</td></tr>
+      <tr><td>스타일</td><td>초록색 알약. 이 클립이 들어 있는 폴더 이름입니다</td></tr>
       <tr><td>감정 태그</td><td><code>neutral</code>이 아닐 때만 표시</td></tr>
       <tr><td>플래그</td><td>주황색 알약. <code>trailing_artifact</code>, <code>clipped</code>,
       <code>silent</code>, <code>too_short</code>, <code>duration_mismatch</code></td></tr>

@@ -399,13 +399,14 @@ async function loadClips(append) {
   try {
     const r = await api("/api/clips", {
       script: SCRIPT, filter: $("#clipFilter").value, q: $("#clipSearch").value,
-      offset: CLIP_OFFSET, limit: 60,
+      style: $("#styleFilter").value, offset: CLIP_OFFSET, limit: 60,
     });
     const flags = Object.entries(r.flagCounts || {})
       .map(([k, v]) => `${k} ${v}`).join(" · ");
     $("#clipStats").textContent =
       `${num(r.total)}건 표시` + (flags ? ` · ${flags}` : " · QC 플래그 없음") +
       (r.restorable ? ` · 되돌릴 수 있는 클립 ${r.restorable}` : "");
+    if (!append) fillStyleFilter(r.styleCounts || {});
     r.rows.forEach((c) => $("#clipList").appendChild(clipCard(c)));
     CLIP_OFFSET += r.rows.length;
     $("#btnMoreClips").classList.toggle("hidden", CLIP_OFFSET >= r.total);
@@ -415,7 +416,8 @@ async function loadClips(append) {
 function clipCard(c) {
   const d = el("div", "clip" + (c.flags.length ? " flagged" : ""));
   const head = el("div", "clip-head");
-  head.appendChild(el("span", "clip-id", c.wav.replace(".wav", "")));
+  head.appendChild(el("span", "clip-id", (c.name || c.wav).replace(".wav", "")));
+  if (c.style) head.appendChild(el("span", "pill style", c.style));
   if (c.emotion && c.emotion !== "neutral")
     head.appendChild(el("span", "pill emo", c.emotion));
   head.appendChild(el("span", "clip-text", c.text));
@@ -424,7 +426,7 @@ function clipCard(c) {
     `${c.duration ?? "?"}s  lead ${c.leadSilence ?? "?"}  tail ${c.tailSilence ?? "?"}`));
 
   const play = el("button", "btn btn-sm", "재생");
-  const audio = new Audio(`/api/audio?script=${encodeURIComponent(SCRIPT)}&wav=${c.wav}`);
+  const audio = new Audio(`/api/audio?script=${encodeURIComponent(SCRIPT)}&wav=${encodeURIComponent(c.wav)}`);
   play.addEventListener("click", () => {
     if (audio.paused) { audio.play(); play.textContent = "정지"; }
     else { audio.pause(); audio.currentTime = 0; play.textContent = "재생"; }
@@ -453,7 +455,7 @@ function clipCard(c) {
     if (c.restorable) {
       const row = el("div", "row");
       const orig = el("button", "btn btn-sm", "원본 재생");
-      const oa = new Audio(`/api/audio?script=${encodeURIComponent(SCRIPT)}&wav=${c.wav}&which=original`);
+      const oa = new Audio(`/api/audio?script=${encodeURIComponent(SCRIPT)}&wav=${encodeURIComponent(c.wav)}&which=original`);
       orig.addEventListener("click", () => {
         if (oa.paused) { oa.play(); orig.textContent = "정지"; }
         else { oa.pause(); oa.currentTime = 0; orig.textContent = "원본 재생"; }
@@ -485,7 +487,7 @@ async function waveBlock(wav, which, label) {
   box.appendChild(canvas);
   try {
     const r = await api(
-      `/api/waveform?script=${encodeURIComponent(SCRIPT)}&wav=${wav}&which=${which}`);
+      `/api/waveform?script=${encodeURIComponent(SCRIPT)}&wav=${encodeURIComponent(wav)}&which=${which}`);
     box.querySelector(".lbl").textContent =
       `${label} · ${r.duration}s · tail ${r.tailSilence}s` +
       (r.flags.length ? ` · ${r.flags.join(",")}` : "");
@@ -512,7 +514,25 @@ function drawWave(canvas, peaks, flagged) {
   });
 }
 
+function fillStyleFilter(counts) {
+  const sel = $("#styleFilter");
+  const keep = sel.value;
+  const names = Object.keys(counts).filter((k) => k !== "(없음)").sort();
+  sel.innerHTML = "";
+  const all = el("option", null, "모든 스타일");
+  all.value = "";
+  sel.appendChild(all);
+  names.forEach((n) => {
+    const o = el("option", null, `${n} (${counts[n]})`);
+    o.value = n;
+    sel.appendChild(o);
+  });
+  sel.disabled = names.length === 0;
+  if (names.indexOf(keep) >= 0) sel.value = keep;
+}
+
 $("#btnClips").addEventListener("click", () => loadClips(false));
+$("#styleFilter").addEventListener("change", () => loadClips(false));
 $("#btnMoreClips").addEventListener("click", () => loadClips(true));
 $("#clipFilter").addEventListener("change", () => loadClips(false));
 $("#clipSearch").addEventListener("keydown", (e) => { if (e.key === "Enter") loadClips(false); });

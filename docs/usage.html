@@ -475,9 +475,38 @@ footer {
   <p><strong>파일명이 ElevenLabs 보이스 이름입니다.</strong>
   <code>Closers_Android.txt</code>는 계정의 <code>Closers_Android</code> 보이스로 생성됩니다.
   프로젝트 폴더에 <code>.txt</code>를 넣으면 자동으로 인식됩니다.</p>
-<pre><code>[neutral] 목적지에 도착했습니다. | 0001.wav
-[alert] 배터리 잔량이 20퍼센트입니다. | 0002.wav
-[combat] 남은 화살은 62발입니다. | 0003.wav</code></pre>
+<pre><code>(스타일)[오디오태그] 텍스트 | NNNN.wav</code></pre>
+  <p>두 태그 모두 선택사항입니다.</p>
+<pre><code>(행복)[happy] 오늘은 정말 즐거운 날이에요! | 0001.wav
+(슬픔)[sad] 다시 만날 수 있을까요. | 0002.wav
+[neutral] 목적지에 도착했습니다. | 0003.wav
+남은 화살은 62발입니다. | 0004.wav</code></pre>
+
+  <h3>두 태그의 역할이 다릅니다</h3>
+  <div class="tablewrap">
+  <table>
+    <thead><tr><th>태그</th><th>하는 일</th><th>API 전송</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><code>(행복)</code></td>
+        <td>클립을 <code>wavs/행복/</code> 폴더에 저장합니다. 분류 라벨입니다</td>
+        <td><strong>안 함</strong> — 과금 문자에 포함되지 않습니다</td>
+      </tr>
+      <tr>
+        <td><code>[happy]</code></td>
+        <td>모델에게 이 감정으로 연기하라고 지시합니다</td>
+        <td>함 — <code>[neutral]</code>만 생략됩니다</td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+
+  <div class="note">
+    <p><strong>스타일 이름이 곧 폴더 이름이 됩니다.</strong> 그래서 파서가
+    경로 구분자, <code>..</code>, Windows 예약어(<code>con</code>, <code>com1</code> 등)를
+    거부합니다. wav 파일명은 스타일이 달라도 전체에서 유일해야 합니다 —
+    다른 모든 곳에서 클립을 식별하는 이름이기 때문입니다.</p>
+  </div>
 
   <h3>웹앱 실행</h3>
 <pre><code>PY -m webapp
@@ -675,8 +704,9 @@ PY -m tts_batch declick Closers_Android.txt --check</code></pre>
   <div class="tree">
 <span class="path">output/&lt;보이스&gt;/</span>
 <span class="path">├─ wavs/NNNN.wav</span>       <span class="desc">24kHz 모노 16bit PCM</span>
-<span class="path">├─ originals/NNNN.wav</span>  <span class="desc">declick 이전 원본 (되돌리기용)</span>
-<span class="path">├─ metadata.csv</span>        <span class="desc">id|transcript|emotion — LJSpeech 형식</span>
+<span class="path">│  └─ 행복/NNNN.wav</span>    <span class="desc">스타일 태그가 있으면 폴더로 나뉩니다</span>
+<span class="path">├─ originals/</span>          <span class="desc">declick 이전 원본, wavs/ 구조를 그대로 따름</span>
+<span class="path">├─ metadata.csv</span>        <span class="desc">id|transcript|emotion|style — LJSpeech 형식</span>
 <span class="path">├─ manifest.jsonl</span>      <span class="desc">seed·파라미터·QC 측정치 전체 기록</span>
 <span class="path">├─ qc_flags.csv</span>        <span class="desc">들어봐야 할 클립</span>
 <span class="path">├─ failures.csv</span>        <span class="desc">끝내 실패한 클립</span>
@@ -684,6 +714,11 @@ PY -m tts_batch declick Closers_Android.txt --check</code></pre>
 <span class="path">├─ changes.txt</span>         <span class="desc">변경된 줄만</span>
 <span class="path">└─ josa_changes.txt</span>    <span class="desc">조사 교정 감사</span>
   </div>
+
+  <h3>id가 파일 경로입니다</h3>
+  <p><code>metadata.csv</code>의 첫 열은 <code>wavs/</code> 기준 상대 경로에서 확장자를 뺀 것입니다.
+  스타일이 있으면 <code>행복/0001</code>, 없으면 <code>0001</code> — 어느 쪽이든 바로 파일로 해석됩니다.
+  스타일 기능 이전에 만들어진 3열짜리 행은 4열로 채워질 뿐 내용이 바뀌지 않습니다.</p>
 
   <h3>transcript가 오디오와 일치합니다</h3>
   <p><code>metadata.csv</code>의 텍스트는 <strong>정규화 후의 문장</strong>입니다.

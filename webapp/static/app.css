@@ -166,6 +166,7 @@ label { font-size: 13px; color: var(--dim); }
 }
 .pill.flag { background: var(--warn); color: #1c1204; border-color: var(--warn); font-weight: 600; }
 .pill.emo { color: var(--accent); }
+.pill.style { background: var(--good); color: #08150f; border-color: var(--good); font-weight: 600; }
 .wave { width: 100%; height: 46px; display: block; margin-top: 8px; }
 .wave-pair { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 .wave-pair .lbl { font-size: 11px; color: var(--dim); font-family: var(--mono); }

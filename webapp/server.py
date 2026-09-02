@@ -27,6 +27,7 @@ from starlette.staticfiles import StaticFiles
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from tts_batch import parser as scriptparser          # noqa: E402
+from tts_batch.parser import iter_clips               # noqa: E402
 from tts_batch import retrim as retrimmod             # noqa: E402
 from tts_batch.audio import analyze, load_wav         # noqa: E402
 from tts_batch.cli import DEFAULTS                    # noqa: E402
@@ -62,11 +63,24 @@ def _script_path(script):
     return os.path.join(ROOT, name)
 
 
-def _safe_wav(wav):
-    name = os.path.basename(wav or "")
-    if not name.endswith(".wav"):
-        raise ValueError("not a wav: %r" % wav)
-    return name
+def _safe_rel(rel):
+    """Validate a clip path relative to wavs/, e.g. 0001.wav or 행복/0001.wav.
+
+    One optional style folder, no separators beyond that, and nothing that can
+    climb out of the directory.
+    """
+    rel = (rel or "").replace("\\", "/").strip("/")
+    if not rel.endswith(".wav"):
+        raise ValueError("not a wav: %r" % rel)
+    parts = rel.split("/")
+    if len(parts) > 2:
+        raise ValueError("clip path is too deep: %r" % rel)
+    for part in parts:
+        if not part or part in (".", ".."):
+            raise ValueError("bad clip path: %r" % rel)
+        if os.path.basename(part) != part:
+            raise ValueError("bad clip path: %r" % rel)
+    return "/".join(parts)
 
 
 def _client():
@@ -95,7 +109,7 @@ def _manifest(out_dir):
                 line = line.strip()
                 if line:
                     r = json.loads(line)
-                    takes[r["wav"]] = r
+                    takes[r.get("path") or r["wav"]] = r
     return takes
 
 
@@ -220,25 +234,30 @@ async def api_clips(request):
     offset = int(body.get("offset", 0))
     limit = min(int(body.get("limit", 60)), 300)
 
+    style_filter = body.get("style") or ""
     flag_counts = {}
+    style_counts = {}
     restorable_total = 0
     rows = []
-    for name in sorted(os.listdir(wav_dir)):
-        if not name.endswith(".wav"):
-            continue
-        r = takes.get(name, {})
+    for rel in iter_clips(wav_dir):
+        r = takes.get(rel, {})
+        style = r.get("style") or (rel.split("/")[0] if "/" in rel else "")
         flags = r.get("flags") or []
         for f in flags:
             flag_counts[f] = flag_counts.get(f, 0) + 1
-        restorable = retrimmod.has_original(out_dir, name)
+        style_counts[style or "(없음)"] = style_counts.get(style or "(없음)", 0) + 1
+        restorable = retrimmod.has_original(out_dir, rel)
         restorable_total += bool(restorable)
         if flt == "flagged" and not flags:
             continue
         if flt == "declicked" and not restorable:
             continue
-        if q and q not in name and q not in (r.get("text") or ""):
+        if style_filter and style != style_filter:
             continue
-        rows.append({"wav": name, "text": r.get("text", ""),
+        if q and q not in rel and q not in (r.get("text") or ""):
+            continue
+        rows.append({"wav": rel, "name": os.path.basename(rel), "style": style,
+                     "text": r.get("text", ""),
                      "emotion": r.get("emotion", ""),
                      "duration": r.get("duration"),
                      "leadSilence": r.get("lead_silence"),
@@ -246,16 +265,16 @@ async def api_clips(request):
                      "seed": r.get("seed"), "flags": flags,
                      "restorable": restorable})
     return JSONResponse({"total": len(rows), "rows": rows[offset:offset + limit],
-                         "flagCounts": flag_counts,
+                         "flagCounts": flag_counts, "styleCounts": style_counts,
                          "restorable": restorable_total})
 
 
 async def api_audio(request):
     script = os.path.basename(request.query_params.get("script") or "")
-    wav = _safe_wav(request.query_params.get("wav"))
+    rel = _safe_rel(request.query_params.get("wav"))
     which = request.query_params.get("which") or "current"
     sub = "originals" if which == "original" else "wavs"
-    path = os.path.join(_out_dir(script), sub, wav)
+    path = os.path.join(_out_dir(script), sub, rel.replace("/", os.sep))
     if not os.path.exists(path):
         return PlainTextResponse("not found", status_code=404)
     return FileResponse(path, media_type="audio/wav")
@@ -264,10 +283,10 @@ async def api_audio(request):
 async def api_waveform(request):
     """Downsampled peaks, plus the measurements the QC checks are based on."""
     script = os.path.basename(request.query_params.get("script") or "")
-    wav = _safe_wav(request.query_params.get("wav"))
+    rel = _safe_rel(request.query_params.get("wav"))
     which = request.query_params.get("which") or "current"
     sub = "originals" if which == "original" else "wavs"
-    path = os.path.join(_out_dir(script), sub, wav)
+    path = os.path.join(_out_dir(script), sub, rel.replace("/", os.sep))
     if not os.path.exists(path):
         return JSONResponse({"error": "not found"}, status_code=404)
 
@@ -290,7 +309,7 @@ async def api_restore(request):
     body = await _body(request)
     script = os.path.basename(body.get("script") or "")
     wavs = body.get("wavs")
-    names = set(wavs) if wavs else None
+    names = set(_safe_rel(w) for w in wavs) if wavs else None
     done = retrimmod.restore(_out_dir(script), names)
     return JSONResponse({"restored": done})
 

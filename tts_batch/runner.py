@@ -13,7 +13,7 @@ import numpy as np
 
 from .audio import analyze, load_wav, pcm_to_wav, trim_silence
 from .normalize import build_prompt, normalize
-from .parser import parse_file, voice_name
+from .parser import clip_path, parse_file, rel_path, voice_name
 from .synth import SynthError
 
 
@@ -97,7 +97,7 @@ def run(script_path, out_dir, synthesizer, sample_rate=24000,
     todo = []
     skipped = []
     for e in entries:
-        path = os.path.join(wav_dir, e.wav)
+        path = clip_path(wav_dir, e)
         if not force and _wav_is_valid(path):
             skipped.append(e)
         else:
@@ -120,7 +120,8 @@ def run(script_path, out_dir, synthesizer, sample_rate=24000,
             raise Cancelled(e.wav)
         norm = normalize(e.text)
         prompt = build_prompt(e.emotion, norm, drop_tags)
-        path = os.path.join(wav_dir, e.wav)
+        path = clip_path(wav_dir, e)
+        os.makedirs(os.path.dirname(path), exist_ok=True)
         pcm = synthesizer.synth(prompt, e.wav)
         if trim_ms is not None:
             samples = np.frombuffer(pcm[: (len(pcm) // 2) * 2], dtype="<i2")
@@ -130,6 +131,8 @@ def run(script_path, out_dir, synthesizer, sample_rate=24000,
         qc = analyze(samples, sr, text=norm)
         return {
             "wav": e.wav,
+            "path": rel_path(e),
+            "style": e.style,
             "emotion": e.emotion,
             "raw_text": e.text,
             "text": norm,
@@ -178,7 +181,9 @@ def _write_outputs(out_dir, voice, results, failures, skipped, script_path):
         for r in results:
             fh.write(json.dumps(r, ensure_ascii=False) + "\n")
 
-    # LJSpeech-style: id | transcript. The transcript is the normalized text,
+    # LJSpeech-style: id | transcript | emotion | style. The id is the path
+    # under wavs/ without the extension, so a styled clip resolves as 행복/0001
+    # and an unstyled one stays 0001. The transcript is the normalized text,
     # which is exactly what the voice says.
     meta = os.path.join(out_dir, "metadata.csv")
     existing = {}
@@ -186,10 +191,11 @@ def _write_outputs(out_dir, voice, results, failures, skipped, script_path):
         with io.open(meta, encoding="utf-8") as fh:
             for row in csv.reader(fh, delimiter="|"):
                 if row:
-                    existing[row[0]] = row
+                    # rows written before styles existed have three columns
+                    existing[row[0]] = (row + ["", "", ""])[:4]
     for r in results:
-        existing[os.path.splitext(r["wav"])[0]] = [
-            os.path.splitext(r["wav"])[0], r["text"], r["emotion"]]
+        key = os.path.splitext(r["path"])[0]
+        existing[key] = [key, r["text"], r["emotion"], r["style"] or ""]
     with io.open(meta, "w", encoding="utf-8", newline="") as fh:
         w = csv.writer(fh, delimiter="|", lineterminator="\n")
         for key in sorted(existing):

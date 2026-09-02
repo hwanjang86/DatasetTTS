@@ -8,8 +8,27 @@ One script file per voice: the filename is the ElevenLabs voice name
 ## Script format
 
 ```
-[emotion] 텍스트 | NNNN.wav
+(스타일)[emotion] 텍스트 | NNNN.wav
 ```
+
+Both tags are optional, so `[neutral] 텍스트 | 0001.wav` still parses.
+
+```
+(행복)[happy] 오늘은 정말 즐거운 날이에요! | 0001.wav
+ |     |
+ |     +-- audio tag, sent inline to the model
+ +-------- style, decides which folder the clip is filed under
+```
+
+The **style** in parentheses is a filing label: it never reaches the API, so it
+costs no characters, and it becomes the folder the clip is written to
+(`wavs/행복/0001.wav`). The **audio tag** in brackets is passed to the model as
+before, with `[neutral]` dropped.
+
+Style names become directory names, so the parser rejects anything unusable as
+one — path separators, `..`, and the names Windows reserves. The wav filename
+stays globally unique across styles, since it identifies the clip everywhere
+else.
 
 ## Commands
 
@@ -91,8 +110,9 @@ belongs in `PROTECTED_TOKENS`.
 
 ```
 output/<Voice>/
-  wavs/NNNN.wav     24 kHz mono 16-bit PCM
-  metadata.csv      id|transcript|emotion  (LJSpeech-style)
+  wavs/NNNN.wav     24 kHz mono 16-bit PCM, or wavs/<스타일>/NNNN.wav
+  originals/        pre-declick copies, mirroring the wavs/ layout
+  metadata.csv      id|transcript|emotion|style  (LJSpeech-style)
   manifest.jsonl    full request parameters and QC measurements per clip
   qc_flags.csv      clips needing a listen
   failures.csv      clips that never succeeded
@@ -100,6 +120,11 @@ output/<Voice>/
   changes.txt       only the lines the pipeline altered
   josa_changes.txt  every distinct particle correction
 ```
+
+The metadata id is the clip's path under `wavs/` without the extension, so a
+styled clip reads as `행복/0001` and an unstyled one stays `0001` — either way
+the id resolves straight to the file. Rows written before styles existed have
+three columns and are padded rather than rewritten.
 
 ## Reliability
 
