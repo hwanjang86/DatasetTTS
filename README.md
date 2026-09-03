@@ -54,7 +54,7 @@ Useful flags: `--limit N` (pilot run), `--trim MS` (edge silence, default 50),
 ## Web app
 
 ```
-%USERPROFILE%\.claude\mcp-servers\elevenlabsenv\Scripts\python.exe -m webapp
+%USERPROFILE%\.claude\mcp-servers\elevenlabs\venv\Scripts\python.exe -m webapp
 ```
 
 Opens on http://127.0.0.1:8765 — loopback only. There is no authentication, the
